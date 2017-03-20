@@ -1,7 +1,7 @@
 // Request class for SorceryMUD, contains all the information of one message sent in Discord
 
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#ifndef REQUEST_H 
+#define REQUEST_H 
 
 #include <zmq.hpp>
 #include <string>

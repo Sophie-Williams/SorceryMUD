@@ -1,4 +1,5 @@
 #include "Request.h"
+#include "Response.h"
 
 #include <zmq.hpp>
 #include <string>
@@ -25,30 +26,31 @@ int main() {
 	
     while (true) {
 		Request req(socket);
-		std::string result;
+		Response rep;
 
 		std::cout << "Received message from user " << req.get_userid() << ": '" << req.get_content() << "'" << std::endl;
 		//  Process the message 
 		if (req.get_content() == "connect") {
+			// It's impossible to connect through the Discord bot while already connected.
+			// However, there is a possibility that someone could send messages through other means and bypass the restrictions placed by the client.
+			// The user should only be allowed to connect if their ID is not in connected.
 			connected.push_back(req.get_userid());
 			// Retrieve character data for the user, and display it
 			// Provide options to select, create, or delete a character
-			result = "Welcome to SorceryMUD."; // Insert ASCII art here
+			rep.set("Welcome to SorceryMUD."); // Insert ASCII art here
 		}
 
 		else if (req.get_content() == "disconnect") {
-			// Save player data to the database and remove player from connected list 
-			//result = "";
+			// Save player data to the database
+			// Remove player from connected list
+			rep.set(""); // "Dummy" response to preserve req-rep pattern
 		}
 
 		else {
-			result = "You have been pwned by a grue.";
+			rep.set("You have been pwned by a grue.");
 		}
 
-		//  Send reply to client
-		zmq::message_t reply(result.length()); // Hopefully I can make this process OO soon
-		memcpy(reply.data(), result.data(), result.length());
-		socket.send(reply);
+		rep.send(socket);
 
 		sleep(1); // Wait before running the loop again. In the future, this should measure the amount of time elapsed since the beginning of the loop, and based on the tickrate, wait a certain amount of time, adjusted for the previous measurement
 	}
