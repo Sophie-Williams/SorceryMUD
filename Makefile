@@ -1,2 +1,2 @@
 all:
-	g++ -o server server.cpp -lzmq
+	g++ -o server server.cpp Request.cpp -lzmq -Wall
