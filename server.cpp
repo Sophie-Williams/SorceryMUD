@@ -1,10 +1,12 @@
 #include "Request.h"
 #include "Response.h"
 
-#include <zmq.hpp>
 #include <string>
 #include <vector>
 #include <iostream>
+#include <zmq.hpp>
+#include <libpq-fe.h>
+//#include "json.hpp"
 #ifndef _WIN32
 #include <unistd.h>
 #else
@@ -37,7 +39,44 @@ int main() {
 			connected.push_back(req.get_userid());
 			// Retrieve character data for the user, and display it
 			// Provide options to select, create, or delete a character
-			rep.set("Welcome to SorceryMUD."); // Insert ASCII art here
+			std::string rep_msg = "Welcome to SorceryMUD.\n\n"; // Insert ASCII art here
+
+			PGresult *res;
+			PGconn *conn = PQconnectdb("host=localhost dbname=sorcery user=sorcery password=ryu5g7cwq89t97z5t4yq");
+			if (PQstatus(conn) != CONNECTION_OK) {
+				fprintf(stderr, "Connection to database failed: %s", PQerrorMessage(conn));
+				PQfinish(conn);
+				exit(1);
+			}
+
+			std::string query = "SELECT name, level, class FROM characters WHERE owner = '" + req.get_userid() + "'";
+			res = PQexec(conn, query.c_str()); 
+			if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+				fprintf(stderr, "Fetching characters failed: %s", PQerrorMessage(conn));
+				PQclear(res);
+				PQfinish(conn);
+				exit(1);
+			}
+			
+			if (PQntuples(res) > 0) {
+				rep_msg += "You have the following characters:\n";
+				for (int i = 0; i < PQntuples(res); i++) {
+					// If I have to use this sort of thing a lot and it becomes cumbersome, I'll just use stringstreams instead
+					std::string charname(PQgetvalue(res, i, 0));
+					std::string charlevel(PQgetvalue(res, i, 1));
+					std::string charclass(PQgetvalue(res, i, 2));
+
+					rep_msg += charname + ", level " + charlevel + " " + charclass + "\n";
+				}
+
+				rep_msg += "\nType `play CHARACTERNAME` in order to select a character, or `create` to create a new one.\n";
+			}
+
+			else {
+				rep_msg += "You have no characters yet. To create a character, type `create`.\n";
+			}
+
+			rep.set(rep_msg);
 		}
 
 		else if (req.get_content() == "disconnect") {

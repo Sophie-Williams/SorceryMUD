@@ -17,7 +17,7 @@ class Response {
 		//~Response();
 		
 		void set(std::string str) { content = str; }
-		void add(std::string str) { content += str; }
+		//void add(std::string str) { content += str; }
 		void send(zmq::socket_t&);
 };
 
