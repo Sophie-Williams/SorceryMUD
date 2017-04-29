@@ -1,3 +1,20 @@
-all:
-	g++ -o server server.cpp Request.cpp Response.cpp -I/usr/include/postgresql -L/usr/lib/x86_64-linux-gnu -lpq -lzmq -Wall
+CC = g++
+OBJ = server.o Request.o Response.o Playerlist.o
 
+server: $(OBJ)
+	$(CC) -o server $(OBJ) -lpq -lzmq -Wall
+
+server.o: server.cpp
+	$(CC) -std=gnu++11 -o server.o -c server.cpp -I/usr/include/postgresql -L/usr/lib/x86_64-linux-gnu -lpq -lzmq -Wall
+
+Request.o: Request.cpp
+	$(CC) -std=gnu++11 -o Request.o -c Request.cpp -lzmq -Wall
+
+Response.o: Response.cpp
+	$(CC) -std=gnu++11 -o Response.o -c Response.cpp -lzmq -Wall
+
+Playerlist.o: Playerlist.cpp
+	$(CC) -std=gnu++11 -o Playerlist.o -c Playerlist.cpp -Wall
+
+clean:
+	rm -f server $(OBJ)
