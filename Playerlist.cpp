@@ -1,19 +1,19 @@
 #include "Playerlist.h"
 
-// Returns -1 if player already in list
-int Playerlist::add(std::string userid, int state) {
-	// Check to see if the player is already somehow there
-	for (unsigned int i = 0; i < players.size(); i++) {
-		if (players[i].userid == userid) {
-			return -1;
-		}
-	}
-	
+void Playerlist::add(std::string userid, int state) {
 	struct Player newplayer;
 	newplayer.userid = userid;
 	newplayer.state = state;
 	players.push_back(newplayer);
-	return 0;
+}
+
+void Playerlist::remove(std::string userid) {
+	for (unsigned int i = 0; i < players.size(); i++) {
+		if (players[i].userid == userid) {
+			players.erase(i);
+			return;
+		}
+	}
 }
 
 // Returns 0 if player is not connected

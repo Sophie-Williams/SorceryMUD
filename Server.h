@@ -4,6 +4,7 @@
 #include "Request.h"
 #include "Response.h"
 
+#include <sstream> // Not needed yet
 #include <iostream>
 #include <string>
 #include <locale>

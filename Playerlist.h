@@ -22,6 +22,7 @@ class Playerlist {
 		//~Playerlist();
 
 		int add(std::string, int);
+		void remove(std::string);
 
 		int playerstate(std::string);
 		int setplayerstate(std::string, int);

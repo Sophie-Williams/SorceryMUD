@@ -9,13 +9,7 @@
 #include <zmq.hpp>
 #include <libpq-fe.h>
 #include "json.hpp"
-#ifndef _WIN32
 #include <unistd.h>
-#else
-#include <windows.h>
-
-#define sleep(n)    Sleep(n)
-#endif
 
 int main() {
 	std::string port = "5555";
@@ -41,10 +35,10 @@ int main() {
 		// WITH SERVER CLASS start
 
 		server.handle_req();
-
+		
 		// WITH SERVER CLASS end
 
-		Request req(socket);
+		/*Request req(socket);
 		Response rep;
 
 		std::string content = req.get_content();
@@ -241,7 +235,7 @@ int main() {
 			}
 
 			else if (state == 23) {
-
+				rep.set("how did you even get here");
 			}
 
 			else {
@@ -250,8 +244,9 @@ int main() {
 		}
 
 		rep.send(socket);
+		*/
 
-		sleep(1); // Wait before running the loop again. In the future, this should be changed
+		Sleep(1); // Wait before running the loop again. In the future, this should be changed
 	}
 
 	return 0;
