@@ -55,7 +55,9 @@ int main() {
 				// It's impossible to connect through the Discord bot while already connected.
 				// However, there is a possibility that someone could send messages through other means and bypass the restrictions placed by the client.
 				// The user should only be allowed to connect if their ID is not in connected.
-				connected.add(userid); // Maybe I should add some exception handling
+				if (connected.add(userid, 10) == -1) {
+					printf("Failed to add user: already connected");
+				}
 				// Retrieve character data for the user, and display it
 				// Provide options to select, create, or delete a character
 				std::string rep_msg = "Welcome to SorceryMUD.\n\n"; // Insert ASCII art here

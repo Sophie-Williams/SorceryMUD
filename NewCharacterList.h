@@ -1,3 +1,5 @@
+// NewCharacter struct and NewCharacterList class for SorceryMUD, assists in keeping track of new character info when they are being created
+
 #ifndef NEWCHARACTERLIST_H
 #define NEWCHARACTERLIST_H
 
