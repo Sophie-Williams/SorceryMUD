@@ -1,5 +1,5 @@
 CC = g++
-OBJ = server.o Request.o Response.o Playerlist.o
+OBJ = server.o Request.o Response.o Playerlist.o NewCharacterList.o
 
 server: $(OBJ)
 	$(CC) -o server $(OBJ) -lpq -lzmq -Wall
@@ -15,6 +15,9 @@ Response.o: Response.cpp
 
 Playerlist.o: Playerlist.cpp
 	$(CC) -std=gnu++11 -o Playerlist.o -c Playerlist.cpp -Wall
+
+NewCharacterList.o: NewCharacterList.cpp
+	$(CC) -std=gnu++11 -o NewCharacterList.o -c NewCharacterList.cpp -Wall
 
 clean:
 	rm -f server $(OBJ)

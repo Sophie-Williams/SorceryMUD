@@ -1,6 +1,7 @@
 #include "Request.h"
 #include "Response.h"
 #include "Playerlist.h"
+#include "NewCharacterList.h"
 
 #include <string>
 #include <iostream>
@@ -27,6 +28,7 @@ int main() {
 	std::cout << "Listening for requests" << std::endl;
 
 	Playerlist connected; // Holds info of all the players who are connected to the game server
+	NewCharacterList new_chars; // Holds info of characters in the process of being created (max 1 per player)
 	
 	PGresult *res;
 	PGconn *conn = PQconnectdb("host=localhost dbname=sorcery user=sorcery password=ryu5g7cwq89t97z5t4yq");
@@ -120,8 +122,7 @@ int main() {
 	
 			else if (state == 10) { // If user is connected and in state 10 (menu)
 				if (content == "create") {
-					printf("NOTE: DOING SHIT\n");
-					rep.set("Please enter a name for the character. Please note that character names have a maximum length of 12 characters and cannot contain special (non-alphanumeric) characters.");
+					rep.set("Enter a name for the new character. Note that character names have a maximum length of 12 characters and cannot contain special (non-alphanumeric) characters.");
 					connected.setplayerstate(userid, 20);
 				}
 
@@ -163,7 +164,7 @@ int main() {
 					rep.set("Character names have a maximum length of 12 characters. Please enter a different name.");
 				}
 
-				else if (content == "create") {
+				else if (content == "create" || content == "quit" || content == "disconnect") { // If this list grows much longer I'll have to do it another way
 					rep.set("That name is not allowed. Please enter a different name.");
 				}
 
@@ -206,10 +207,34 @@ int main() {
 						}
 
 						else {
-							rep.set("Nice job, you entered a valid name. Unfortunately I haven't implemented this part yet. Sorry :(");
+							// The name is valid
+							new_chars.add(userid);
+							new_chars.set_name(userid, content);
+							rep.set("Enter the character's gender. You may either type `m` or `f`.");
+							connected.setplayerstate(userid, 21);
 						}
 					}
 				}
+			}
+
+			else if (state == 21) {
+				if (content == "m" || content == "f") {
+					new_chars.set_name(userid, content);
+					rep.set("Race Selection (I haven't put any thought into the actual races in this game so here are some placeholders)\n\n\t* Crab\n\t* Tortoise\n\t* Hare");
+					connected.setplayerstate(userid, 22);
+				}
+
+				else {
+					rep.set("That response is not valid. Please only either type `m` or `f`.");
+				}
+			}
+
+			else if (state == 22) {
+				rep.set("You chose THAT? Wow, what a ... er, interesting choice.");
+			}
+
+			else if (state == 23) {
+
 			}
 
 			else {
