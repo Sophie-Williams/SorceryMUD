@@ -2,10 +2,10 @@
 #include "Response.h"
 #include "Playerlist.h"
 #include "NewCharacterList.h"
+#include "Server.h"
 
-#include <string>
 #include <iostream>
-#include <locale>
+#include <string>
 #include <zmq.hpp>
 #include <libpq-fe.h>
 #include "json.hpp"
@@ -18,18 +18,17 @@
 #endif
 
 int main() {
-	std::cout << "SorceryMUD, a MUD game created to demonstrate the potential of MUDBot" << std::endl;
+	std::string port = "5555";
 
-	//std::locale loc;
-    zmq::context_t context(1);
+    /*zmq::context_t context(1);
 	zmq::socket_t socket(context, ZMQ_REP);
 	std::cout << "Binding socket to localhost:5555 ... " << std::endl;
     socket.bind("tcp://*:5555");
-	std::cout << "Listening for requests" << std::endl;
+	std::cout << "Listening for requests" << std::endl;*/
 
-	Playerlist connected; // Holds info of all the players who are connected to the game server
-	NewCharacterList new_chars; // Holds info of characters in the process of being created (max 1 per player)
-	
+	Server server;
+	server.bind(port);
+
 	PGresult *res;
 	PGconn *conn = PQconnectdb("host=localhost dbname=sorcery user=sorcery password=ryu5g7cwq89t97z5t4yq");
 	if (PQstatus(conn) != CONNECTION_OK) {
@@ -39,6 +38,12 @@ int main() {
 	}
 
     while (true) {
+		// WITH SERVER CLASS start
+
+		server.handle_req();
+
+		// WITH SERVER CLASS end
+
 		Request req(socket);
 		Response rep;
 

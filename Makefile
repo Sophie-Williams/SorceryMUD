@@ -1,5 +1,5 @@
 CC = g++
-OBJ = sorcery.o Request.o Response.o Playerlist.o NewCharacterList.o
+OBJ = sorcery.o Request.o Response.o Playerlist.o NewCharacterList.o Server.o
 
 sorcery: $(OBJ)
 	$(CC) -o sorcery $(OBJ) -lpq -lzmq -Wall
@@ -18,6 +18,9 @@ Playerlist.o: Playerlist.cpp
 
 NewCharacterList.o: NewCharacterList.cpp
 	$(CC) -std=gnu++11 -o NewCharacterList.o -c NewCharacterList.cpp -Wall
+
+Server.o: Server.cpp
+	$(CC) -std=gnu++11 -o Server.o -c Server.cpp -Wall
 	
 clean:
 	rm -f sorcery $(OBJ)
