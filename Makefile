@@ -1,11 +1,11 @@
 CC = g++
-OBJ = server.o Request.o Response.o Playerlist.o NewCharacterList.o
+OBJ = sorcery.o Request.o Response.o Playerlist.o NewCharacterList.o
 
-server: $(OBJ)
-	$(CC) -o server $(OBJ) -lpq -lzmq -Wall
+sorcery: $(OBJ)
+	$(CC) -o sorcery $(OBJ) -lpq -lzmq -Wall
 
-server.o: server.cpp
-	$(CC) -std=gnu++11 -o server.o -c server.cpp -I/usr/include/postgresql -L/usr/lib/x86_64-linux-gnu -lpq -lzmq -Wall
+sorcery.o: main.cpp
+	$(CC) -std=gnu++11 -o sorcery.o -c main.cpp -I/usr/include/postgresql -L/usr/lib/x86_64-linux-gnu -lpq -lzmq -Wall
 
 Request.o: Request.cpp
 	$(CC) -std=gnu++11 -o Request.o -c Request.cpp -lzmq -Wall
@@ -18,6 +18,6 @@ Playerlist.o: Playerlist.cpp
 
 NewCharacterList.o: NewCharacterList.cpp
 	$(CC) -std=gnu++11 -o NewCharacterList.o -c NewCharacterList.cpp -Wall
-
+	
 clean:
-	rm -f server $(OBJ)
+	rm -f sorcery $(OBJ)

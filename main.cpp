@@ -246,7 +246,7 @@ int main() {
 
 		rep.send(socket);
 
-		sleep(1); // Wait before running the loop again. In the future, this should measure the amount of time elapsed since the beginning of the loop, and based on the tickrate, wait a certain amount of time, adjusted for the previous measurement
+		sleep(1); // Wait before running the loop again. In the future, this should be changed
 	}
 
 	return 0;
