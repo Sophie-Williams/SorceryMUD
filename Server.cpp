@@ -1,11 +1,7 @@
 #include "Server.h"
 
-void Server::bind(std::string port) { 
-	context = zmq::context_t(1);
-	socket = zmq::socket_t(context, ZMQ_REP);
-	s << "Binding socket to localhost:" << port << std::endl;
-	socket.bind("tcp://*:" + port);
-	s << "Listening for requests on port " << port << std::endl;
+Server::Server() {
+	CMD_INVALID = "That is not a valid command.";
 }
 
 std::string Server::not_connected(std::string userid, std::string content) {
@@ -30,6 +26,8 @@ std::string Server::not_connected(std::string userid, std::string content) {
 		
 		return rep_msg;
 	}
+
+	return CMD_INVALID;
 }
 
 std::string Server::menu(std::string userid, std::string content) {
@@ -84,13 +82,17 @@ std::string Server::select_gender(std::string userid, std::string content) {
 	return "That response is not valid. Please only either type `m` or `f`.";
 }
 
-std::string Server::select_race(std:;string userid, std::string content) {
+std::string Server::select_race(std::string userid, std::string content) {
 	return "You chose THAT? Wow, what a ... er, interesting choice.";
 }
 
-void Server::handle_req() {
+void Server::handle_req(zmq::socket_t& socket) {
+	handle_req(socket, std::cout);
+}
+
+void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 	Request req(socket);
-	Request rep;
+	Response rep;
 
 	std::string userid = req.get_userid();
 	std::string content = req.get_content();
@@ -110,7 +112,7 @@ void Server::handle_req() {
 
 			else {
 				// Save player and character data to the database, set state to 10 (why do I need to do that again? It's just set to 10 upon login anyway ... why did I make a state column?)
-				connected.remove(std::string);
+				connected.remove(userid);
 				rep.set(""); // "Dummy" response to preserve req-rep pattern
 			}
 		}

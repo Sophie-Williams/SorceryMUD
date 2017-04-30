@@ -20,21 +20,23 @@ int main() {
     socket.bind("tcp://*:5555");
 	std::cout << "Listening for requests" << std::endl;*/
 
+	zmq::context_t context(1);
+	zmq::socket_t socket(context, ZMQ_REP);
 	Server server;
-	server.bind(port);
+	server.bind(socket, port);
 
-	PGresult *res;
+	/*PGresult *res;
 	PGconn *conn = PQconnectdb("host=localhost dbname=sorcery user=sorcery password=ryu5g7cwq89t97z5t4yq");
 	if (PQstatus(conn) != CONNECTION_OK) {
 		fprintf(stderr, "Connection to database failed: %s", PQerrorMessage(conn));
 		PQfinish(conn);
 		exit(1);
-	}
+	}*/
 
     while (true) {
 		// WITH SERVER CLASS start
 
-		server.handle_req();
+		server.handle_req(socket);
 		
 		// WITH SERVER CLASS end
 
@@ -246,7 +248,7 @@ int main() {
 		rep.send(socket);
 		*/
 
-		Sleep(1); // Wait before running the loop again. In the future, this should be changed
+		sleep(1); // Wait before running the loop again. In the future, this should be changed
 	}
 
 	return 0;

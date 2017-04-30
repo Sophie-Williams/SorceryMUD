@@ -1,6 +1,8 @@
 CC = g++
 OBJ = sorcery.o Request.o Response.o Playerlist.o NewCharacterList.o Server.o
 
+#NOTE: move libpq requirement to Server class instead of main once database stuff is implemented
+
 sorcery: $(OBJ)
 	$(CC) -o sorcery $(OBJ) -lpq -lzmq -Wall
 

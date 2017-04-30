@@ -10,7 +10,7 @@ void Playerlist::add(std::string userid, int state) {
 void Playerlist::remove(std::string userid) {
 	for (unsigned int i = 0; i < players.size(); i++) {
 		if (players[i].userid == userid) {
-			players.erase(i);
+			players.erase(players.begin() + i);
 			return;
 		}
 	}

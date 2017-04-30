@@ -21,7 +21,7 @@ class Playerlist {
 		Playerlist() { }
 		//~Playerlist();
 
-		int add(std::string, int);
+		void add(std::string, int);
 		void remove(std::string);
 
 		int playerstate(std::string);
