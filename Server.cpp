@@ -17,13 +17,41 @@ std::string Server::not_connected(std::string userid, std::string content) {
 		std::string rep_msg = "Welcome to SorceryMUD.\n\n"; // Insert ASCII art here
 		
 		// Create a new row for the player if and only if they do not already have one
-		
+		std::string player_query = "INSERT INTO players (userid, first_activity, last_activity, state) SELECT '" + userid + "', current_date, current_date, 0 WHERE NOT EXISTS (SELECT userid FROM players WHERE userid = '" + userid + "')";
+		dbcommand(player_query);
 		// Retrieve character data
-		
+		std::string chars_query = "SELECT name, level, class, complete FROM characters WHERE owner = '" + userid + "'";
+		PGresult *chars = dbselect(chars_query);
+
 		// Display the characters
-		
-		rep_msg += "enter create or cahracter name\n";
-		
+		if (PQntuples(chars) > 0) {
+			rep_msg += "You have the following characters:\n";
+			for (int i = 0; i < PQntuples(chars); i++) {
+				std::string charname(PQgetvalue(chars, i, 0));
+				std::string charlevel(PQgetvalue(chars, i, 1));
+				std::string charclass(PQgetvalue(chars, i, 2));
+				std::string charcomplete(PQgetvalue(chars, i, 3));
+
+				rep_msg += "\t* " + charname;
+
+				if (charcomplete == "t") {
+					rep_msg += ", Level " + charlevel + " " + charclass;
+				}
+
+				else {
+					rep_msg += " [INCOMPLETE]";
+				}
+
+				rep_msg += "\n"; 
+			}
+
+			rep_msg += "\nType the name of a character in order to select them, or `create` to create a new character.";
+		}
+
+		else {
+			rep_msg += "You have no characters yet. To create a character, type `create`.";
+		}
+
 		return rep_msg;
 	}
 
@@ -84,6 +112,38 @@ std::string Server::select_gender(std::string userid, std::string content) {
 
 std::string Server::select_race(std::string userid, std::string content) {
 	return "You chose THAT? Wow, what a ... er, interesting choice.";
+}
+
+void Server::dbconnect() {
+	conn = PQconnectdb("host=localhost dbname=sorcery user=sorcery password=ryu5g7cwq89t97z5t4yq");
+
+	if (PQstatus(conn) != CONNECTION_OK) {
+		std::cerr << "Connection to database failed: " << PQerrorMessage(conn);
+		PQfinish(conn);
+		exit(1);
+	}
+}
+
+void Server::dbcommand(std::string query) {
+	PGresult *res = PQexec(conn, query.c_str());
+	if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+		std::cerr << "Database operation failed: " << PQerrorMessage(conn);
+		PQclear(res);
+		PQfinish(conn);
+		exit(1);
+	}
+}
+
+PGresult* Server::dbselect(std::string query) {
+	PGresult *res = PQexec(conn, query.c_str());
+	if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+		std::cerr << "Failed to retrieve information from database: " << PQerrorMessage(conn);
+		PQclear(res);
+		PQfinish(conn);
+		exit(1);
+	}
+
+	return res;
 }
 
 void Server::handle_req(zmq::socket_t& socket) {

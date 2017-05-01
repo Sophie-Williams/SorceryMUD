@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 #include <zmq.hpp>
-#include <libpq-fe.h>
+//#include <libpq-fe.h>
 #include "json.hpp"
 #include <unistd.h>
 
@@ -22,8 +22,13 @@ int main() {
 
 	zmq::context_t context(1);
 	zmq::socket_t socket(context, ZMQ_REP);
+	std::cout << "Initializing server" << std::endl;
 	Server server;
+	std::cout << "Connecting to database" << std::endl;
+	server.dbconnect();
+	std::cout << "Binding socket to localhost:5555" << std::endl;
 	server.bind(socket, port);
+	std::cout << "Listening for requests" << std::endl;
 
 	/*PGresult *res;
 	PGconn *conn = PQconnectdb("host=localhost dbname=sorcery user=sorcery password=ryu5g7cwq89t97z5t4yq");
