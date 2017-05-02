@@ -65,8 +65,26 @@ std::string Server::menu(std::string userid, std::string content) {
 	}
 	
 	// Retrieve the player's character list and iterate through them, checking against content
-	
-	return "stuff";
+	std::string chars_query = "SELECT name, charid FROM characters WHERE owner = '" + userid + "' AND complete";
+	PGresult *chars = dbselect(chars_query);
+
+	std::string charid;
+	for (int i = 0; i < PQntuples(chars); i++) {
+		std::string charname = PQgetvalue(chars, i, 0);
+		if (content == charname) { // Should be case-insensitive
+			charid = PQgetvalue(chars, i, 1);
+			break;
+		}
+	}
+
+	if (!charid.empty()) { // Why did I make it like this again?? Whe nwill charid ever be an empty string??
+		// Select the character for playing, etc.
+		// Change the user's state
+		return "Selected character"; // Obviously this text will not be here after I implement game stuff
+	}
+
+	// Hmm ... actually, I think it was just so I wouldn't need another bool to keep track of, makes sense.
+	return "No character with that name was found. Type the name of a character in order to select them, or `create` to create a new character.";
 }
 
 std::string Server::naming(std::string userid, std::string content) {
