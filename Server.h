@@ -33,6 +33,7 @@ class Server {
 		std::string naming(std::string, std::string);
 		std::string select_gender(std::string, std::string);
 		std::string select_race(std::string, std::string);
+		std::string select_class(std::string, std::string);
 
 		void bind(zmq::socket_t& socket, std::string port) { socket.bind("tcp://*:" + port); }
 		void dbconnect();

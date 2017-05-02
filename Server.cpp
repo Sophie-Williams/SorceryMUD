@@ -25,14 +25,14 @@ std::string Server::not_connected(std::string userid, std::string content) {
 
 		// Display the characters
 		if (PQntuples(chars) > 0) {
-			rep_msg += "You have the following characters:\n";
+			rep_msg += "You have the following characters:\n\n";
 			for (int i = 0; i < PQntuples(chars); i++) {
 				std::string charname(PQgetvalue(chars, i, 0));
 				std::string charlevel(PQgetvalue(chars, i, 1));
 				std::string charclass(PQgetvalue(chars, i, 2));
 				std::string charcomplete(PQgetvalue(chars, i, 3));
 
-				rep_msg += "\t* " + charname;
+				rep_msg += "* " + charname;
 
 				if (charcomplete == "t") {
 					rep_msg += ", Level " + charlevel + " " + charclass;
@@ -104,10 +104,11 @@ std::string Server::naming(std::string userid, std::string content) {
 	}
 
 	// Retrieve character list and verify the new name is not the same
-
-	bool unique = true;
+	std::string chars_query = "SELECT name FROM characters WHERE owner = '" + userid + "'";
+	PGresult *chars = dbselect(chars_query);
 	
-	if (!unique) {
+	for (int i = 0; i < PQntuples(chars); i++) {
+		std::string charname(PQgetvalue(chars, i, 0));
 		return "You already have a character with that name. Please enter a different name.";
 	}
 
@@ -120,9 +121,9 @@ std::string Server::naming(std::string userid, std::string content) {
 
 std::string Server::select_gender(std::string userid, std::string content) {
 	if (content == "m" || content == "f") {
-		newchars.set_name(userid, content);
+		newchars.set_gender(userid, content);
 		connected.setplayerstate(userid, 22);
-		return "Race Selection (I haven't put any thought into the actual races in this game so here are some placeholders)\n\n\t* Crab\n\t* Tortoise\n\t* Hare";
+		return "Select the character's race. (I haven't put any thought into the actual races in this game so here are some placeholders.)\n\nCrab\n\t_Jack of few trades and master of none, the crab is an excellent race to play if you like being disappointed._\n\nTortoise\n\t_Tortoises aspire to nothing less than greatness; unfortunately, they rarely achieve anything more than mediocrity. You would be better off playing as a sea slug._\n\nHare\n\t_Though cute, hares offer nothing else of value and face a severe overpopulation problem in this universe anyway._";
 	}
 
 	return "That response is not valid. Please only either type `m` or `f`.";
@@ -130,6 +131,10 @@ std::string Server::select_gender(std::string userid, std::string content) {
 
 std::string Server::select_race(std::string userid, std::string content) {
 	return "You chose THAT? Wow, what a ... er, interesting choice.";
+}
+
+std::string Server::select_class(std::string userid, std::string content) {
+	return "how did you even get here";
 }
 
 void Server::dbconnect() {
@@ -212,7 +217,7 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 		}
 
 		else if (state == 23) {
-			rep.set("how did you even get here");
+			rep.set(select_class(userid, content));
 		}
 
 		else {
