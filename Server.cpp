@@ -133,7 +133,7 @@ std::string Server::select_race(std::string userid, std::string content) {
 	if (content == "crab" || content == "tortoise" || content == "hare") {
 		newchars.set_race(userid, content); // to lower
 		connected.setplayerstate(userid, 23);
-		return "Select the character's class.";
+		return "Select the character's class. (Placeholder classes ahoy.)\n\nDragonslayer - _Dragonslayers have one purpose: to defend their homes and people against dragonkind. Unfortunately, dragons are entirely fictional beings, and as such, dragonslayers typically must take a second job in order to put food on the table._\n\nSorcerer - _Sorcerers claim to be able to harness the dark energies of the universe and shape the world to their will, and as such are formidable enemies if you are very superstitious. However, no evidence has yet been presented to corroborate this claim._\n\nThief - _Thieves specialize in the art of stealth and, well, thievery, of course. They are experts at all things theft-related, from credit card fraud to embezzlement to larceny. Most thieves are arrested only after realizing that crouching doesn't make them invisible._\n\nHealer - _Healers are noble and compassionate individuals who dedicate their lives toward helping others, or are just in it for the money. The path to becoming a healer is strenuous and difficult. After four years of intense training, students must undergo a time-honored test to prove themselves worthy of further study, usually referred to as the \"MCAT\"._\n\nDruid - _Look, sakuras!_";
 	}
 
 	return "That is not a race. Please choose from the races provided.";
@@ -185,7 +185,7 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 
 	std::string userid = req.get_userid();
 	std::string content = req.get_content();
-	s << "Received message from user " << userid << ": '" << content << "'" << std::endl;
+	s << "Message from user " << userid << ": '" << content << "'" << std::endl;
 
 	int state = connected.playerstate(userid);
 
