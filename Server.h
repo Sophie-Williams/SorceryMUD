@@ -1,17 +1,18 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "Request.h"
-#include "Response.h"
-#include "Playerlist.h"
-#include "NewCharacterList.h"
-
 #include <sstream> // Not needed yet
 #include <iostream>
 #include <string>
 #include <locale>
+#include <algorithm>
 #include <zmq.hpp>
 #include <libpq-fe.h>
+
+#include "Request.h"
+#include "Response.h"
+#include "Playerlist.h"
+#include "NewCharacterList.h"
 
 class Server {
 	private:

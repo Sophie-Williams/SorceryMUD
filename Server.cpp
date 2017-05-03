@@ -121,20 +121,26 @@ std::string Server::naming(std::string userid, std::string content) {
 
 std::string Server::select_gender(std::string userid, std::string content) {
 	if (content == "m" || content == "f") {
-		newchars.set_gender(userid, content);
+		newchars.set_gender(userid, content); // to lower
 		connected.setplayerstate(userid, 22);
-		return "Select the character's race. (I haven't put any thought into the actual races in this game so here are some placeholders.)\n\nCrab\n\t_Jack of few trades and master of none, the crab is an excellent race to play if you like being disappointed._\n\nTortoise\n\t_Tortoises aspire to nothing less than greatness; unfortunately, they rarely achieve anything more than mediocrity. You would be better off playing as a sea slug._\n\nHare\n\t_Though cute, hares offer nothing else of value and face a severe overpopulation problem in this universe anyway._";
+		return "Select the character's race. (I haven't put any thought into the actual races in this game so here are some placeholders.)\n\nCrab - _Jack of few trades and master of none, the crab is an excellent race to play if you like being disappointed._\n\nTortoise - _Tortoises aspire to nothing less than greatness; unfortunately, they rarely achieve anything more than mediocrity. You would be better off playing as a sea slug._\n\nHare - _Though cute, hares offer nothing else of value and face a severe overpopulation problem in this universe anyway._";
 	}
 
 	return "That response is not valid. Please only either type `m` or `f`.";
 }
 
 std::string Server::select_race(std::string userid, std::string content) {
-	return "You chose THAT? Wow, what a ... er, interesting choice.";
+	if (content == "crab" || content == "tortoise" || content == "hare") {
+		newchars.set_race(userid, content); // to lower
+		connected.setplayerstate(userid, 23);
+		return "Select the character's class.";
+	}
+
+	return "That is not a race. Please choose from the races provided.";
 }
 
 std::string Server::select_class(std::string userid, std::string content) {
-	return "how did you even get here";
+	return "Class";
 }
 
 void Server::dbconnect() {
@@ -182,6 +188,8 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 	s << "Received message from user " << userid << ": '" << content << "'" << std::endl;
 
 	int state = connected.playerstate(userid);
+
+	std::transform(content.begin(), content.end(), content.begin(), ::tolower); // Convert string to lowercase for case-insensitive comparisons
 
 	if (state == 0) {
 		rep.set(not_connected(userid, content));

@@ -1,15 +1,14 @@
+#include <iostream>
+#include <string>
+#include <zmq.hpp>
+#include "json.hpp"
+#include <unistd.h>
+
 #include "Request.h"
 #include "Response.h"
 #include "Playerlist.h"
 #include "NewCharacterList.h"
 #include "Server.h"
-
-#include <iostream>
-#include <string>
-#include <zmq.hpp>
-//#include <libpq-fe.h>
-#include "json.hpp"
-#include <unistd.h>
 
 int main() {
 	std::string port = "5555";
