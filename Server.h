@@ -29,12 +29,14 @@ class Server {
 	public:
 		Server();
 
+		std::string main_menu(std::string, std::string);
 		std::string not_connected(std::string, std::string);
 		std::string menu(std::string, std::string);
 		std::string naming(std::string, std::string);
 		std::string select_gender(std::string, std::string);
 		std::string select_race(std::string, std::string);
 		std::string select_class(std::string, std::string);
+		std::string newchar_confirm(std::string, std::string);
 
 		void bind(zmq::socket_t& socket, std::string port) { socket.bind("tcp://*:" + port); }
 		void dbconnect();

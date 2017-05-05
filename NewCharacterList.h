@@ -24,11 +24,20 @@ class NewCharacterList {
 		NewCharacterList() { }
 		//~NewCharacterList();
 
+		// These methods access items in the new character list. They take a string (representing a user ID) as an identifier, since each player should only have at most one character in creation at any given moment.
+
 		void add(std::string);
+		void remove(std::string);
+
 		void set_name(std::string, std::string);
 		void set_gender(std::string, std::string);
 		void set_race(std::string, std::string);
 		void set_class(std::string, std::string);
+
+		std::string get_name(std::string);
+		std::string get_gender(std::string);
+		std::string get_race(std::string);
+		std::string get_class(std::string);
 };
 
 #endif

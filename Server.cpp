@@ -4,6 +4,44 @@ Server::Server() {
 	CMD_INVALID = "That is not a valid command.";
 }
 
+std::string Server::main_menu(std::string userid, std::string content) {
+	// Retrieve character data
+	std::string chars_query = "SELECT name, level, class, complete FROM characters WHERE owner = '" + userid + "'";
+	PGresult *chars = dbselect(chars_query);
+	std::string rep_msg;
+
+	// Display the characters
+	if (PQntuples(chars) > 0) {
+		rep_msg += "You have the following characters:\n\n";
+		for (int i = 0; i < PQntuples(chars); i++) {
+			std::string charname(PQgetvalue(chars, i, 0));
+			std::string charlevel(PQgetvalue(chars, i, 1));
+			std::string charclass(PQgetvalue(chars, i, 2));
+			std::string charcomplete(PQgetvalue(chars, i, 3));
+
+			rep_msg += charname;
+
+			if (charcomplete == "t") {
+				rep_msg += ", Level " + charlevel + " " + charclass;
+			}
+
+			else {
+				rep_msg += " [INCOMPLETE]";
+			}
+
+			rep_msg += "\n"; 
+		}
+
+		rep_msg += "\nType the name of a character in order to select them, or `create` to create a new character.";
+	}
+
+	else {
+		rep_msg += "You have no characters yet. To create a character, type `create`.";
+	}
+
+	return rep_msg;
+}
+
 std::string Server::not_connected(std::string userid, std::string content) {
 	if (content == "connect") {
 		// It's impossible to connect through the Discord bot while already connected.
@@ -14,46 +52,11 @@ std::string Server::not_connected(std::string userid, std::string content) {
 		}
 		
 		connected.add(userid, 10);
-		std::string rep_msg = "Welcome to SorceryMUD.\n\n"; // Insert ASCII art here
-		
 		// Create a new row for the player if and only if they do not already have one
 		std::string player_query = "INSERT INTO players (userid, first_activity, last_activity, state) SELECT '" + userid + "', current_date, current_date, 0 WHERE NOT EXISTS (SELECT userid FROM players WHERE userid = '" + userid + "')";
 		dbcommand(player_query);
-		// Retrieve character data
-		std::string chars_query = "SELECT name, level, class, complete FROM characters WHERE owner = '" + userid + "'";
-		PGresult *chars = dbselect(chars_query);
-
-		// Display the characters
-		if (PQntuples(chars) > 0) {
-			rep_msg += "You have the following characters:\n\n";
-			for (int i = 0; i < PQntuples(chars); i++) {
-				std::string charname(PQgetvalue(chars, i, 0));
-				std::string charlevel(PQgetvalue(chars, i, 1));
-				std::string charclass(PQgetvalue(chars, i, 2));
-				std::string charcomplete(PQgetvalue(chars, i, 3));
-
-				rep_msg += "* " + charname;
-
-				if (charcomplete == "t") {
-					rep_msg += ", Level " + charlevel + " " + charclass;
-				}
-
-				else {
-					rep_msg += " [INCOMPLETE]";
-				}
-
-				rep_msg += "\n"; 
-			}
-
-			rep_msg += "\nType the name of a character in order to select them, or `create` to create a new character.";
-		}
-
-		else {
-			rep_msg += "You have no characters yet. To create a character, type `create`.";
-		}
-
-		return rep_msg;
-	}
+		return "Welcome to SorceryMUD.\n\n" + main_menu(userid, content); // Insert ASCII art here
+	}		
 
 	return CMD_INVALID;
 }
@@ -131,7 +134,7 @@ std::string Server::select_gender(std::string userid, std::string content) {
 
 std::string Server::select_race(std::string userid, std::string content) {
 	if (content == "crab" || content == "tortoise" || content == "hare") {
-		newchars.set_race(userid, content); // to lower
+		newchars.set_race(userid, content);
 		connected.setplayerstate(userid, 23);
 		return "Select the character's class. (Placeholder classes ahoy.)\n\nDragonslayer - _Dragonslayers have one purpose: to defend their homes and people against dragonkind. Unfortunately, dragons are entirely fictional beings, and as such, dragonslayers typically must take a second job in order to put food on the table._\n\nSorcerer - _Sorcerers claim to be able to harness the dark energies of the universe and shape the world to their will, and as such are formidable enemies if you are very superstitious. However, no evidence has yet been presented to corroborate this claim._\n\nThief - _Thieves specialize in the art of stealth and, well, thievery, of course. They are experts at all things theft-related, from credit card fraud to embezzlement to larceny. Most thieves are arrested only after realizing that crouching doesn't make them invisible._\n\nHealer - _Healers are noble and compassionate individuals who dedicate their lives toward helping others, or are just in it for the money. The path to becoming a healer is strenuous and difficult. After four years of intense training, students must undergo a time-honored test to prove themselves worthy of further study, usually referred to as the \"MCAT\"._\n\nDruid - _Look, sakuras!_";
 	}
@@ -140,7 +143,49 @@ std::string Server::select_race(std::string userid, std::string content) {
 }
 
 std::string Server::select_class(std::string userid, std::string content) {
-	return "Class";
+	if (content == "dragonslayer" || content == "sorcerer" || content == "healer" || content == "druid") {
+		newchars.set_class(userid, content);
+
+		connected.setplayerstate(userid, 24);
+		std::string rep_msg = "Please review the following details and make sure they are correct.\n\nName: " + newchars.get_name(userid) + "\nGender: ";
+		if (newchars.get_gender(userid) == "m") {
+			rep_msg += "Male\n";
+		}
+
+		else {
+			rep_msg += "Female\n";
+		}
+
+		rep_msg += "Race: ";
+		std::string race = newchars.get_race(userid);
+		race[0] = toupper(race[0]);
+		rep_msg += race;
+		rep_msg += "\nClass: ";
+		std::string game_class = newchars.get_class(userid);
+		game_class[0] = toupper(game_class[0]);
+		rep_msg += game_class + "\n\nTo confirm your choices, type `ok`. Otherwise, type `back` to go back or `restart` to start the character creation process over.";
+		return rep_msg;
+	}
+
+	return "That is not a class. Please choose from the classes provided.";
+}
+
+std::string Server::newchar_confirm(std::string userid, std::string content) {
+	if (content == "ok") {
+		// Add the character to the database
+		std::string add_query = "INSERT INTO characters (owner, name, gender, race, class, complete) VALUES ('" + userid + "', '" + newchars.get_name(userid) + "', '" + newchars.get_gender(userid) + "', '" + newchars.get_race(userid) + "', '" + newchars.get_class(userid) + "', 't')";
+		dbcommand(add_query);
+
+		// Return to main menu
+		connected.setplayerstate(userid, 10);
+		return "Character successfully created. Returning to main menu.\n\n" + main_menu(userid, content);
+	}
+
+	if (content == "back" || content == "restart") {
+		return "Unfortunately, that feature is not available at this time.";
+	}
+
+	return CMD_INVALID;
 }
 
 void Server::dbconnect() {
@@ -226,6 +271,10 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 
 		else if (state == 23) {
 			rep.set(select_class(userid, content));
+		}
+
+		else if (state == 24) {
+			rep.set(newchar_confirm(userid, content));
 		}
 
 		else {
