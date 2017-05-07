@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <locale>
 
 struct NewCharacter {
 	std::string owner;

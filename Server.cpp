@@ -33,12 +33,10 @@ std::string Server::main_menu(std::string userid, std::string content) {
 		}
 
 		rep_msg += "\nType the name of a character in order to select them, or `create` to create a new character.";
+		return rep_msg;
 	}
 
-	else {
-		rep_msg += "You have no characters yet. To create a character, type `create`.";
-	}
-
+	rep_msg += "You have no characters yet. To create a character, type `create`.";
 	return rep_msg;
 }
 
@@ -76,17 +74,12 @@ std::string Server::menu(std::string userid, std::string content) {
 		std::string charname = PQgetvalue(chars, i, 0);
 		if (content == charname) { // Should be case-insensitive
 			charid = PQgetvalue(chars, i, 1);
-			break;
+			// Select the character for playing, etc.
+			// Change the user's state
+			return "Selected character";
 		}
 	}
 
-	if (!charid.empty()) { // Why did I make it like this again?? Whe nwill charid ever be an empty string??
-		// Select the character for playing, etc.
-		// Change the user's state
-		return "Selected character"; // Obviously this text will not be here after I implement game stuff
-	}
-
-	// Hmm ... actually, I think it was just so I wouldn't need another bool to keep track of, makes sense.
 	return "No character with that name was found. Type the name of a character in order to select them, or `create` to create a new character.";
 }
 
@@ -112,7 +105,9 @@ std::string Server::naming(std::string userid, std::string content) {
 	
 	for (int i = 0; i < PQntuples(chars); i++) {
 		std::string charname(PQgetvalue(chars, i, 0));
-		return "You already have a character with that name. Please enter a different name.";
+		if (charname == content) { // Should be case insensitive
+			return "You already have a character with that name. Please enter a different name."; 
+		}
 	}
 
 	// The name is valid
@@ -157,13 +152,13 @@ std::string Server::select_class(std::string userid, std::string content) {
 		}
 
 		rep_msg += "Race: ";
-		std::string race = newchars.get_race(userid);
-		race[0] = toupper(race[0]);
-		rep_msg += race;
+		//std::string race = newchars.get_race(userid);
+		//race[0] = toupper(race[0]);
+		rep_msg += newchars.get_race(userid);
 		rep_msg += "\nClass: ";
-		std::string game_class = newchars.get_class(userid);
-		game_class[0] = toupper(game_class[0]);
-		rep_msg += game_class + "\n\nTo confirm your choices, type `ok`. Otherwise, type `back` to go back or `restart` to start the character creation process over.";
+		//std::string game_class = newchars.get_class(userid);
+		//game_class[0] = toupper(game_class[0]);
+		rep_msg += newchars.get_class(userid) + "\n\nTo confirm your choices, type `ok`. Otherwise, type `back` to go back or `restart` to start the character creation process over.";
 		return rep_msg;
 	}
 

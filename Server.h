@@ -4,7 +4,6 @@
 #include <sstream> // Not needed yet
 #include <iostream>
 #include <string>
-#include <locale>
 #include <algorithm>
 #include <zmq.hpp>
 #include <libpq-fe.h>

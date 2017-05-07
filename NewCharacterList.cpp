@@ -37,6 +37,8 @@ void NewCharacterList::set_gender(std::string userid, std::string gender) {
 }
 
 void NewCharacterList::set_race(std::string userid, std::string race) {
+	race[0] = toupper(race[0]);
+
 	for (unsigned int i = 0; i < new_characters.size(); i++) {
 		if (new_characters[i].owner == userid) {
 			new_characters[i].race = race;
@@ -46,6 +48,8 @@ void NewCharacterList::set_race(std::string userid, std::string race) {
 }
 
 void NewCharacterList::set_class(std::string userid, std::string game_class) {
+	game_class[0] = toupper(game_class[0]);
+	
 	for (unsigned int i = 0; i < new_characters.size(); i++) {
 		if (new_characters[i].owner == userid) {
 			new_characters[i].game_class = game_class;
