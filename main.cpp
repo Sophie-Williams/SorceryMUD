@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <zmq.hpp>
-#include "json.hpp"
+//#include "json.hpp" // This should only be needd in Server.h
 #include <unistd.h>
 
 #include "Request.h"
@@ -17,6 +17,8 @@ int main() {
 	zmq::socket_t socket(context, ZMQ_REP);
 	std::cout << "Initializing server" << std::endl;
 	Server server;
+	std::cout << "Loading room data" << std::endl;
+	server.init_rooms("rooms.json");
 	std::cout << "Connecting to database" << std::endl;
 	server.dbconnect();
 	std::cout << "Binding socket to localhost:5555" << std::endl;

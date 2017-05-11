@@ -4,20 +4,24 @@ Server::Server() {
 	CMD_INVALID = "That is not a valid command.";
 }
 
+std::string Server::in_game(std::string userid, std::string content) {
+	// Parse command
+}
+
 std::string Server::main_menu(std::string userid, std::string content) {
 	// Retrieve character data
 	std::string chars_query = "SELECT name, level, class, complete FROM characters WHERE owner = '" + userid + "'";
-	PGresult *chars = dbselect(chars_query);
+	PGresult* player_chars = dbselect(chars_query);
 	std::string rep_msg;
 
 	// Display the characters
-	if (PQntuples(chars) > 0) {
+	if (PQntuples(player_chars) > 0) {
 		rep_msg += "You have the following characters:\n\n";
-		for (int i = 0; i < PQntuples(chars); i++) {
-			std::string charname(PQgetvalue(chars, i, 0));
-			std::string charlevel(PQgetvalue(chars, i, 1));
-			std::string charclass(PQgetvalue(chars, i, 2));
-			std::string charcomplete(PQgetvalue(chars, i, 3));
+		for (int i = 0; i < PQntuples(player_chars); i++) {
+			std::string charname(PQgetvalue(player_chars, i, 0));
+			std::string charlevel(PQgetvalue(player_chars, i, 1));
+			std::string charclass(PQgetvalue(player_chars, i, 2));
+			std::string charcomplete(PQgetvalue(player_chars, i, 3));
 
 			rep_msg += charname;
 
@@ -66,17 +70,17 @@ std::string Server::menu(std::string userid, std::string content) {
 	}
 	
 	// Retrieve the player's character list and iterate through them, checking against content
-	std::string chars_query = "SELECT name, charid FROM characters WHERE owner = '" + userid + "' AND complete";
-	PGresult *chars = dbselect(chars_query);
+	std::string chars_query = "SELECT name FROM characters WHERE owner = '" + userid + "' AND complete";
+	PGresult* player_chars = dbselect(chars_query);
 
-	std::string charid;
-	for (int i = 0; i < PQntuples(chars); i++) {
-		std::string charname = PQgetvalue(chars, i, 0);
+	for (int i = 0; i < PQntuples(player_chars); i++) {
+		std::string charname = PQgetvalue(player_chars, i, 0);
 		if (content == charname) { // Should be case-insensitive
-			charid = PQgetvalue(chars, i, 1);
-			// Select the character for playing, etc.
-			// Change the user's state
-			return "Selected character";
+			// Select the character and change the user's state
+			connected.setplayerstate(userid, 40);
+			//load_char(charname, userid);
+			//return "Selected character";
+			return get_room_desc(load_char(charname, userid)); // load_char returns a location
 		}
 	}
 
@@ -101,10 +105,10 @@ std::string Server::naming(std::string userid, std::string content) {
 
 	// Retrieve character list and verify the new name is not the same
 	std::string chars_query = "SELECT name FROM characters WHERE owner = '" + userid + "'";
-	PGresult *chars = dbselect(chars_query);
+	PGresult *player_chars = dbselect(chars_query);
 	
-	for (int i = 0; i < PQntuples(chars); i++) {
-		std::string charname(PQgetvalue(chars, i, 0));
+	for (int i = 0; i < PQntuples(player_chars); i++) {
+		std::string charname(PQgetvalue(player_chars, i, 0));
 		if (charname == content) { // Should be case insensitive
 			return "You already have a character with that name. Please enter a different name."; 
 		}
@@ -119,7 +123,7 @@ std::string Server::naming(std::string userid, std::string content) {
 
 std::string Server::select_gender(std::string userid, std::string content) {
 	if (content == "m" || content == "f") {
-		newchars.set_gender(userid, content); // to lower
+		newchars.set_gender(userid, content); 
 		connected.setplayerstate(userid, 22);
 		return "Select the character's race. (I haven't put any thought into the actual races in this game so here are some placeholders.)\n\nCrab - _Jack of few trades and master of none, the crab is an excellent race to play if you like being disappointed._\n\nTortoise - _Tortoises aspire to nothing less than greatness; unfortunately, they rarely achieve anything more than mediocrity. You would be better off playing as a sea slug._\n\nHare - _Though cute, hares offer nothing else of value and face a severe overpopulation problem in this universe anyway._";
 	}
@@ -168,7 +172,7 @@ std::string Server::select_class(std::string userid, std::string content) {
 std::string Server::newchar_confirm(std::string userid, std::string content) {
 	if (content == "ok") {
 		// Add the character to the database
-		std::string add_query = "INSERT INTO characters (owner, name, gender, race, class, complete) VALUES ('" + userid + "', '" + newchars.get_name(userid) + "', '" + newchars.get_gender(userid) + "', '" + newchars.get_race(userid) + "', '" + newchars.get_class(userid) + "', 't')";
+		std::string add_query = "INSERT INTO characters (owner, name, gender, race, class, level, xp, location, complete) VALUES ('" + userid + "', '" + newchars.get_name(userid) + "', '" + newchars.get_gender(userid) + "', '" + newchars.get_race(userid) + "', '" + newchars.get_class(userid) + "', 1, 0, 1, 't')";
 		dbcommand(add_query);
 
 		// Return to main menu
@@ -181,6 +185,54 @@ std::string Server::newchar_confirm(std::string userid, std::string content) {
 	}
 
 	return CMD_INVALID;
+}
+
+void Server::init_rooms(std::string filepath) {
+	std::ifstream file(filepath);
+	nlohmann::json j;
+	file >> j;
+	
+	// I'LL MAKE THIS DO ALL THE THINGS LATER
+	Room r(j["rooms"][0]["roomid"], j["rooms"][0]["desc"]);
+	rooms.push_back(r);
+}
+
+std::string Server::get_room_desc(int r) {
+	for (unsigned int i = 0; i < rooms.size(); i++) {
+		if (rooms[i].get_id() == r) {
+			return rooms[i].get_desc();
+		}
+	}
+
+	return nullptr;
+}
+
+int Server::load_char(std::string charname, std::string userid) {
+	std::string load_query = "SELECT gender, race, class, level, xp, location, HP_current, HP_max, money FROM characters WHERE name = '" + charname + "' and owner = '" + userid + "'";
+	PGresult* chardata = dbselect(load_query);
+
+	if (PQntuples(chardata) > 1) {
+		throw "Player has more than one character of the same name";
+	}
+
+	std::string race = PQgetvalue(chardata, 0, 1);
+	std::string game_class = PQgetvalue(chardata, 0, 2);
+	int loc = atoi(PQgetvalue(chardata, 0, 5));
+
+	Character ch;
+	ch.set_name(charname);
+	ch.set_gender(PQgetvalue(chardata, 0,0)[0]);
+	ch.set_race(race);
+	ch.set_class(game_class);
+	ch.set_level(atoi(PQgetvalue(chardata, 0, 3)));
+	ch.set_xp(atoi(PQgetvalue(chardata, 0, 4)));
+	ch.set_loc(loc);
+	ch.set_hp_cur(atoi(PQgetvalue(chardata, 0, 6)));
+	ch.set_hp_max(atoi(PQgetvalue(chardata, 0, 7)));
+	ch.set_money(atoi(PQgetvalue(chardata, 0, 8)));
+	chars.push_back(ch);
+
+	return loc;
 }
 
 void Server::dbconnect() {
@@ -227,9 +279,9 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 	std::string content = req.get_content();
 	s << "Message from user " << userid << ": '" << content << "'" << std::endl;
 
-	int state = connected.playerstate(userid);
-
 	std::transform(content.begin(), content.end(), content.begin(), ::tolower); // Convert string to lowercase for case-insensitive comparisons
+
+	int state = connected.playerstate(userid);
 
 	if (state == 0) {
 		rep.set(not_connected(userid, content));
@@ -272,8 +324,13 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 			rep.set(newchar_confirm(userid, content));
 		}
 
+		else if (state == 40) {
+			rep.set(in_game(userid, content));
+		}
+
 		else {
-			rep.set("You have been pwned by a grue.");
+			rep.set("Invalid player state. Returning to main menu...");
+			connected.setplayerstate(0);
 		}
 	}
 	
