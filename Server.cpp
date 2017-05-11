@@ -6,6 +6,7 @@ Server::Server() {
 
 std::string Server::in_game(std::string userid, std::string content) {
 	// Parse command
+	return "I don't know what '" + content + "' is.";
 }
 
 std::string Server::main_menu(std::string userid, std::string content) {
@@ -78,8 +79,6 @@ std::string Server::menu(std::string userid, std::string content) {
 		if (content == charname) { // Should be case-insensitive
 			// Select the character and change the user's state
 			connected.setplayerstate(userid, 40);
-			//load_char(charname, userid);
-			//return "Selected character";
 			return get_room_desc(load_char(charname, userid)); // load_char returns a location
 		}
 	}
@@ -155,14 +154,8 @@ std::string Server::select_class(std::string userid, std::string content) {
 			rep_msg += "Female\n";
 		}
 
-		rep_msg += "Race: ";
-		//std::string race = newchars.get_race(userid);
-		//race[0] = toupper(race[0]);
-		rep_msg += newchars.get_race(userid);
-		rep_msg += "\nClass: ";
-		//std::string game_class = newchars.get_class(userid);
-		//game_class[0] = toupper(game_class[0]);
-		rep_msg += newchars.get_class(userid) + "\n\nTo confirm your choices, type `ok`. Otherwise, type `back` to go back or `restart` to start the character creation process over.";
+		// There is no need to capitalize the first letter of the race and class here, since that is already done in the set_race function
+		rep_msg += "Race: " + newchars.get_race(userid) + "\nClass: " + newchars.get_class(userid) + "\n\nTo confirm your choices, type `ok`. Otherwise, type `back` to go back or `restart` to start the character creation process over.";
 		return rep_msg;
 	}
 
@@ -330,7 +323,7 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 
 		else {
 			rep.set("Invalid player state. Returning to main menu...");
-			connected.setplayerstate(0);
+			connected.setplayerstate(userid, 0);
 		}
 	}
 	

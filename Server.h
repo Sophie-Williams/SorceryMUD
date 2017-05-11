@@ -35,6 +35,7 @@ class Server {
 	public:
 		Server();
 
+		std::string in_game(std::string, std::string);
 		std::string main_menu(std::string, std::string);
 		std::string not_connected(std::string, std::string);
 		std::string menu(std::string, std::string);

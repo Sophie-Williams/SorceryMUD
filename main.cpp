@@ -15,11 +15,11 @@ int main() {
 
 	zmq::context_t context(1);
 	zmq::socket_t socket(context, ZMQ_REP);
-	std::cout << "Initializing server" << std::endl;
+	std::cout << "Initializing server..." << std::endl;
 	Server server;
-	std::cout << "Loading room data" << std::endl;
+	std::cout << "Loading room data..." << std::endl;
 	server.init_rooms("rooms.json");
-	std::cout << "Connecting to database" << std::endl;
+	std::cout << "Connecting to database..." << std::endl;
 	server.dbconnect();
 	std::cout << "Binding socket to localhost:5555" << std::endl;
 	server.bind(socket, port);
