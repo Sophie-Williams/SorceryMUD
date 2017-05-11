@@ -4,8 +4,16 @@ Server::Server() {
 	CMD_INVALID = "That is not a valid command.";
 }
 
+std::string Server::look(std::string userid) {
+	std::string rep_msg = get_room_desc(chars.get_loc(userid));
+	return rep_msg;
+}
+
 std::string Server::in_game(std::string userid, std::string content) {
-	// Parse command
+	if (content == "look") {
+		return look(userid);
+	}
+
 	return "I don't know what '" + content + "' is.";
 }
 
@@ -79,6 +87,10 @@ std::string Server::menu(std::string userid, std::string content) {
 		if (content == charname) { // Should be case-insensitive
 			// Select the character and change the user's state
 			connected.setplayerstate(userid, 40);
+			if (chars.char_exists_with_user(userid)) {
+				return "You are already playing as another character.";
+			}
+
 			return get_room_desc(load_char(charname, userid)); // load_char returns a location
 		}
 	}
@@ -204,26 +216,31 @@ int Server::load_char(std::string charname, std::string userid) {
 	std::string load_query = "SELECT gender, race, class, level, xp, location, HP_current, HP_max, money FROM characters WHERE name = '" + charname + "' and owner = '" + userid + "'";
 	PGresult* chardata = dbselect(load_query);
 
+	if (PQntuples(chardata) == 0) {
+		throw "No character with name '" + charname + "'.";
+	}
+
 	if (PQntuples(chardata) > 1) {
 		throw "Player has more than one character of the same name";
 	}
 
-	std::string race = PQgetvalue(chardata, 0, 1);
-	std::string game_class = PQgetvalue(chardata, 0, 2);
+	//std::string race = PQgetvalue(chardata, 0, 1);
+	//std::string game_class = PQgetvalue(chardata, 0, 2);
 	int loc = atoi(PQgetvalue(chardata, 0, 5));
 
 	Character ch;
-	ch.set_name(charname);
-	ch.set_gender(PQgetvalue(chardata, 0,0)[0]);
-	ch.set_race(race);
-	ch.set_class(game_class);
-	ch.set_level(atoi(PQgetvalue(chardata, 0, 3)));
-	ch.set_xp(atoi(PQgetvalue(chardata, 0, 4)));
-	ch.set_loc(loc);
-	ch.set_hp_cur(atoi(PQgetvalue(chardata, 0, 6)));
-	ch.set_hp_max(atoi(PQgetvalue(chardata, 0, 7)));
-	ch.set_money(atoi(PQgetvalue(chardata, 0, 8)));
-	chars.push_back(ch);
+	ch.name = charname;
+	ch.gender = PQgetvalue(chardata, 0,0)[0];
+	ch.race = PQgetvalue(chardata, 0, 1);
+	ch.game_class = PQgetvalue(chardata, 0, 2);
+	ch.level = atoi(PQgetvalue(chardata, 0, 3));
+	ch.xp = atoi(PQgetvalue(chardata, 0, 4));
+	ch.loc = loc;
+	ch.hp_cur = atoi(PQgetvalue(chardata, 0, 6));
+	ch.hp_max = atoi(PQgetvalue(chardata, 0, 7));
+	ch.money = atoi(PQgetvalue(chardata, 0, 8));
+	ch.owner = userid;
+	chars.add(ch);
 
 	return loc;
 }

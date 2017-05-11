@@ -13,17 +13,17 @@
 
 #include "Request.h"
 #include "Response.h"
-#include "Playerlist.h"
+#include "PlayerList.h"
 #include "NewCharacterList.h"
 #include "Room.h"
-#include "Character.h"
+#include "CharacterList.h"
 
 class Server {
 	private:
-		Playerlist connected;
+		PlayerList connected;
 		NewCharacterList newchars;
 		std::vector<Room> rooms; // Fuck it
-		std::vector<Character> chars; // Fuck it
+		CharacterList chars;
 
 		PGconn *conn;
 
@@ -35,6 +35,7 @@ class Server {
 	public:
 		Server();
 
+		std::string look(std::string);
 		std::string in_game(std::string, std::string);
 		std::string main_menu(std::string, std::string);
 		std::string not_connected(std::string, std::string);
@@ -46,7 +47,6 @@ class Server {
 		std::string newchar_confirm(std::string, std::string);
 
 		std::string get_room_desc(int);
-
 		int load_char(std::string, std::string);
 		void init_rooms(std::string);
 		void bind(zmq::socket_t& socket, std::string port) { socket.bind("tcp://*:" + port); }

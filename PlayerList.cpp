@@ -1,13 +1,13 @@
-#include "Playerlist.h"
+#include "PlayerList.h"
 
-void Playerlist::add(std::string userid, int state) {
+void PlayerList::add(std::string userid, int state) {
 	struct Player newplayer;
 	newplayer.userid = userid;
 	newplayer.state = state;
 	players.push_back(newplayer);
 }
 
-void Playerlist::remove(std::string userid) {
+void PlayerList::remove(std::string userid) {
 	for (unsigned int i = 0; i < players.size(); i++) {
 		if (players[i].userid == userid) {
 			players.erase(players.begin() + i);
@@ -17,7 +17,7 @@ void Playerlist::remove(std::string userid) {
 }
 
 // Returns 0 if player is not connected
-int Playerlist::playerstate(std::string userid) {
+int PlayerList::playerstate(std::string userid) {
 	for (unsigned int i = 0; i < players.size(); i++) {
 		if (players[i].userid == userid) {
 			return players[i].state;
@@ -28,7 +28,7 @@ int Playerlist::playerstate(std::string userid) {
 }
 
 // Returns -1 if player not found
-int Playerlist::setplayerstate(std::string userid, int state) {
+int PlayerList::setplayerstate(std::string userid, int state) {
 	for (unsigned int i = 0; i < players.size(); i++) {
 		if (players[i].userid == userid) {
 			players[i].state = state;
