@@ -5,7 +5,7 @@ Server::Server() {
 }
 
 std::string Server::look(std::string userid) {
-	std::string rep_msg = get_room_desc(chars.get_loc(userid));
+	std::string rep_msg = rooms.get_room_desc(chars.get_loc(userid));
 	return rep_msg;
 }
 
@@ -91,7 +91,8 @@ std::string Server::menu(std::string userid, std::string content) {
 				return "You are already playing as another character.";
 			}
 
-			return get_room_desc(load_char(charname, userid)); // load_char returns a location
+			load_char(charname, userid);
+			return look(userid);
 		}
 	}
 
@@ -192,27 +193,7 @@ std::string Server::newchar_confirm(std::string userid, std::string content) {
 	return CMD_INVALID;
 }
 
-void Server::init_rooms(std::string filepath) {
-	std::ifstream file(filepath);
-	nlohmann::json j;
-	file >> j;
-	
-	// I'LL MAKE THIS DO ALL THE THINGS LATER
-	Room r(j["rooms"][0]["roomid"], j["rooms"][0]["desc"]);
-	rooms.push_back(r);
-}
-
-std::string Server::get_room_desc(int r) {
-	for (unsigned int i = 0; i < rooms.size(); i++) {
-		if (rooms[i].get_id() == r) {
-			return rooms[i].get_desc();
-		}
-	}
-
-	return nullptr;
-}
-
-int Server::load_char(std::string charname, std::string userid) {
+void Server::load_char(std::string charname, std::string userid) {
 	std::string load_query = "SELECT gender, race, class, level, xp, location, HP_current, HP_max, money FROM characters WHERE name = '" + charname + "' and owner = '" + userid + "'";
 	PGresult* chardata = dbselect(load_query);
 
@@ -226,7 +207,7 @@ int Server::load_char(std::string charname, std::string userid) {
 
 	//std::string race = PQgetvalue(chardata, 0, 1);
 	//std::string game_class = PQgetvalue(chardata, 0, 2);
-	int loc = atoi(PQgetvalue(chardata, 0, 5));
+	//int loc = atoi(PQgetvalue(chardata, 0, 5));
 
 	Character ch;
 	ch.name = charname;
@@ -235,14 +216,12 @@ int Server::load_char(std::string charname, std::string userid) {
 	ch.game_class = PQgetvalue(chardata, 0, 2);
 	ch.level = atoi(PQgetvalue(chardata, 0, 3));
 	ch.xp = atoi(PQgetvalue(chardata, 0, 4));
-	ch.loc = loc;
+	ch.loc = atoi(PQgetvalue(chardata, 0, 5));
 	ch.hp_cur = atoi(PQgetvalue(chardata, 0, 6));
 	ch.hp_max = atoi(PQgetvalue(chardata, 0, 7));
 	ch.money = atoi(PQgetvalue(chardata, 0, 8));
 	ch.owner = userid;
 	chars.add(ch);
-
-	return loc;
 }
 
 void Server::dbconnect() {

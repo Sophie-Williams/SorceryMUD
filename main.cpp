@@ -11,7 +11,7 @@ int main() {
 	zmq::context_t context(1);
 	zmq::socket_t socket(context, ZMQ_REP);
 	Server server;
-	std::cout << "Loading room data..." << std::endl;
+	std::cout << "Loading game data..." << std::endl;
 	server.init_rooms("rooms.json");
 	std::cout << "Connecting to database..." << std::endl;
 	server.dbconnect();

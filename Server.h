@@ -9,20 +9,19 @@
 #include <libpq-fe.h>
 #include <fstream>
 #include "json.hpp"
-#include <vector> // Fuck it
 
 #include "Request.h"
 #include "Response.h"
 #include "PlayerList.h"
 #include "NewCharacterList.h"
-#include "Room.h"
+#include "RoomList.h"
 #include "CharacterList.h"
 
 class Server {
 	private:
 		PlayerList connected;
 		NewCharacterList newchars;
-		std::vector<Room> rooms; // Fuck it
+		RoomList rooms;
 		CharacterList chars;
 
 		PGconn *conn;
@@ -46,9 +45,8 @@ class Server {
 		std::string select_class(std::string, std::string);
 		std::string newchar_confirm(std::string, std::string);
 
-		std::string get_room_desc(int);
-		int load_char(std::string, std::string);
-		void init_rooms(std::string);
+		void init_rooms(std::string filepath) { rooms.init(filepath); }
+		void load_char(std::string, std::string);
 		void bind(zmq::socket_t& socket, std::string port) { socket.bind("tcp://*:" + port); }
 		void dbconnect();
 

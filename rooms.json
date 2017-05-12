@@ -2,7 +2,17 @@
 	"rooms": [
 		{
 			"roomid": 1,
-			"desc": "It is pitch black. You are likely to be eaten by a grue."
+			"desc": "You see a lot of things. They look pretty. To the north is another thing.",
+			"exits": [
+				["north", 2]
+			]
+		},
+		{
+			"roomid": 2,
+			"desc": "Here is a thing. How exciting. To the south is a lot of pretty things.", 
+			"exits": [
+				["south", 1]
+			]
 		}
 	]
 }
