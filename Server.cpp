@@ -9,12 +9,54 @@ std::string Server::look(std::string userid) {
 	return rep_msg;
 }
 
+std::string Server::look_roomid(int roomid) {
+	// In the future when look functionality is expanded, this function header may also be expanded to require the userid
+	std::string rep_msg = rooms.get_room_desc(roomid);
+	return rep_msg;
+}
+
 std::string Server::in_game(std::string userid, std::string content) {
-	if (content == "look") {
+	//std::vector<std::string> input;
+	std::istringstream ss(content);
+	/*while (!ss.eof()) {
+		std::string word;
+		std::getline(ss, word, ' ');
+		input.push_back(word);
+	}*/
+
+	std::string cmd, args;
+	std::getline(ss, cmd, ' ');
+	std::getline(ss, args);
+
+	if (cmd == "look") {
+		if (args == "") {
+			return look(userid);
+		}
+
+		// There will be other stuff here later, in the case that there are extra args
 		return look(userid);
 	}
 
-	return "I don't know what '" + content + "' is.";
+	if (cmd == "go") {
+		if (args == "") {
+			return "Go where?";
+		}
+
+		int loc = chars.get_loc(userid);
+		int exit_amnt = rooms.exit_amnt(loc);
+		for (int p = 0; p < exit_amnt; p++) {
+			Exit exit = rooms.get_exit(loc, p);
+			if (exit.name == args) {
+				// Change character's location, execute look command 
+				chars.set_loc(userid, exit.dest);
+				return look_roomid(exit.dest);
+			}
+		}
+
+		return "I don't know where '" + args + "' is.";
+	}
+
+	return "I don't know what '" + cmd + "' is.";
 }
 
 std::string Server::main_menu(std::string userid, std::string content) {
@@ -92,7 +134,8 @@ std::string Server::menu(std::string userid, std::string content) {
 			}
 
 			load_char(charname, userid);
-			return look(userid);
+			std::string rep_msg = look(userid);
+			return rep_msg;
 		}
 	}
 

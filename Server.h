@@ -9,6 +9,7 @@
 #include <libpq-fe.h>
 #include <fstream>
 #include "json.hpp"
+#include <vector> // To hold words
 
 #include "Request.h"
 #include "Response.h"
@@ -35,6 +36,8 @@ class Server {
 		Server();
 
 		std::string look(std::string);
+		std::string look_roomid(int);
+
 		std::string in_game(std::string, std::string);
 		std::string main_menu(std::string, std::string);
 		std::string not_connected(std::string, std::string);

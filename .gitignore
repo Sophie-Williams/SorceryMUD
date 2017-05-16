@@ -1,3 +1,4 @@
 json.hpp
 *.o
+*.swp
 game_server

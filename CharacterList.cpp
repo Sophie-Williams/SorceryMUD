@@ -19,3 +19,11 @@ int CharacterList::get_loc(std::string userid) {
 
 	return -1;
 }
+
+void CharacterList::set_loc(std::string userid, int loc) {
+	for (unsigned int i = 0; i < chars.size(); i++) {
+		if (chars[i].owner == userid) {
+			chars[i].loc = loc;
+		}
+	}
+}

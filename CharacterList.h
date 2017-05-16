@@ -35,6 +35,7 @@ class CharacterList {
 		void add(Character ch) { chars.push_back(ch); }
 
 		int get_loc(std::string);
+		void set_loc(std::string, int);
 };
 
 #endif
