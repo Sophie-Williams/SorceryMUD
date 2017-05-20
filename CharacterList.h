@@ -33,9 +33,11 @@ class CharacterList {
 
 		bool char_exists_with_user(std::string); 
 		void add(Character ch) { chars.push_back(ch); }
-
+		Character get_char(std::string);
+		
 		int get_loc(std::string);
 		void set_loc(std::string, int);
+		std::string get_name(std::string);
 };
 
 #endif

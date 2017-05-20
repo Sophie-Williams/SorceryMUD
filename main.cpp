@@ -19,9 +19,16 @@ int main() {
 	server.bind(socket, port);
 	std::cout << "Listening for requests" << std::endl;
 
-    while (true) {
-		server.handle_req(socket);
-		sleep(1); // Wait before running the loop again. In the future, this should be changed
+	while (true) {
+   		try {
+			server.handle_req(socket);
+			sleep(1); // Change this later
+		}
+
+		catch (char const* errmsg) {
+			std::cout << errmsg << std::endl;
+			server.send_err(socket);
+		}
 	}
 
 	return 0;

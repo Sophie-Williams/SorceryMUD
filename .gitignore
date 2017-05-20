@@ -1,4 +1,6 @@
 json.hpp
 *.o
 *.swp
-game_server
+sorcery
+sorcery.log
+game.sh

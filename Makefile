@@ -5,7 +5,7 @@ OBJ = sorcery.o Request.o Response.o PlayerList.o NewCharacterList.o CharacterLi
 #$(CC) -std=gnu++11 -o sorcery.o -c main.cpp -I/usr/include/postgresql -L/usr/lib/x86_64-linux-gnu -lpq -lzmq -Wall
 
 game_server: $(OBJ)
-	$(CC) -o game_server $(OBJ) -lpq -lzmq -Wall
+	$(CC) -o sorcery $(OBJ) -lpq -lzmq -Wall
 
 sorcery.o: main.cpp
 	$(CC) -std=gnu++11 -o sorcery.o -c main.cpp -I/usr/include/postgresql -lzmq -Wall

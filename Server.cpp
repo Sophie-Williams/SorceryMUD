@@ -5,13 +5,28 @@ Server::Server() {
 }
 
 std::string Server::look(std::string userid) {
-	std::string rep_msg = rooms.get_room_desc(chars.get_loc(userid));
-	return rep_msg;
+	return look_roomid(userid, chars.get_loc(userid));
 }
 
-std::string Server::look_roomid(int roomid) {
+std::string Server::look_roomid(std::string userid, int roomid) {
 	// In the future when look functionality is expanded, this function header may also be expanded to require the userid
 	std::string rep_msg = rooms.get_room_desc(roomid);
+	int i, player_amnt = rooms.player_amnt(roomid);
+	for (i = 0; i < player_amnt; i++) {
+		Character character = rooms.get_player(roomid, i);
+		if (character.owner == userid) {
+			i++;
+			break;
+		}
+		
+		rep_msg += "\n" + character.name + " is here.";
+	}
+
+	for (; i < player_amnt; i++) { // Loop twice for a tiny optimization
+		Character character = rooms.get_player(roomid, i);
+		rep_msg += "\n" + character.name + " is here.";
+	}
+
 	return rep_msg;
 }
 
@@ -48,8 +63,8 @@ std::string Server::in_game(std::string userid, std::string content) {
 			Exit exit = rooms.get_exit(loc, p);
 			if (exit.name == args) {
 				// Change character's location, execute look command 
-				chars.set_loc(userid, exit.dest);
-				return look_roomid(exit.dest);
+				move_char(userid, loc, exit.dest);
+				return look_roomid(userid, exit.dest);
 			}
 		}
 
@@ -236,6 +251,13 @@ std::string Server::newchar_confirm(std::string userid, std::string content) {
 	return CMD_INVALID;
 }
 
+void Server::move_char(std::string userid, int loc, int dest) {
+	Character c = chars.get_char(userid);
+	rooms.remove_player(loc, userid);
+	chars.set_loc(userid, dest);
+	rooms.add_player(dest, c);
+}
+
 void Server::load_char(std::string charname, std::string userid) {
 	std::string load_query = "SELECT gender, race, class, level, xp, location, HP_current, HP_max, money FROM characters WHERE name = '" + charname + "' and owner = '" + userid + "'";
 	PGresult* chardata = dbselect(load_query);
@@ -265,6 +287,8 @@ void Server::load_char(std::string charname, std::string userid) {
 	ch.money = atoi(PQgetvalue(chardata, 0, 8));
 	ch.owner = userid;
 	chars.add(ch);
+
+	rooms.add_player(ch.loc, ch);
 }
 
 void Server::dbconnect() {
@@ -297,6 +321,12 @@ PGresult* Server::dbselect(std::string query) {
 	}
 
 	return res;
+}
+
+void Server::send_err(zmq::socket_t& socket) {
+	Response rep;
+	rep.set("There was a server error in processing the command.");
+	rep.send(socket);
 }
 
 void Server::handle_req(zmq::socket_t& socket) {

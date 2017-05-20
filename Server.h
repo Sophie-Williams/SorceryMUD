@@ -36,7 +36,7 @@ class Server {
 		Server();
 
 		std::string look(std::string);
-		std::string look_roomid(int);
+		std::string look_roomid(std::string, int);
 
 		std::string in_game(std::string, std::string);
 		std::string main_menu(std::string, std::string);
@@ -48,11 +48,13 @@ class Server {
 		std::string select_class(std::string, std::string);
 		std::string newchar_confirm(std::string, std::string);
 
+		void move_char(std::string, int, int);
 		void init_rooms(std::string filepath) { rooms.init(filepath); }
 		void load_char(std::string, std::string);
 		void bind(zmq::socket_t& socket, std::string port) { socket.bind("tcp://*:" + port); }
 		void dbconnect();
 
+		void send_err(zmq::socket_t&);
 		void handle_req(zmq::socket_t&);
 		void handle_req(zmq::socket_t&, std::ostream&);
 };
