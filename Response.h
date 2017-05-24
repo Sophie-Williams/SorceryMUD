@@ -18,6 +18,7 @@ class Response {
 		
 		void set(std::string str) { content = str; }
 		void send(zmq::socket_t&);
+		void send_multipart(zmq::socket_t&);
 };
 
 #endif

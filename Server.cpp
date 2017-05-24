@@ -1,6 +1,7 @@
 #include "Server.h"
 
-Server::Server() {
+Server::Server(zmq::context_t& context)
+	: r_socket(context, ZMQ_REP), s_socket(context, ZMQ_PUB) {
 	CMD_INVALID = "That is not a valid command.";
 }
 
@@ -252,10 +253,13 @@ std::string Server::newchar_confirm(std::string userid, std::string content) {
 }
 
 void Server::move_char(std::string userid, int loc, int dest) {
-	Character c = chars.get_char(userid);
+	Character ch = chars.get_char(userid);
 	rooms.remove_player(loc, userid);
 	chars.set_loc(userid, dest);
-	rooms.add_player(dest, c);
+	rooms.add_player(dest, ch);
+
+	notify_room(loc, "[name] has left toward the [exit].");
+	notify_room(dest, "[name] has arrived from the [exit]");
 }
 
 void Server::load_char(std::string charname, std::string userid) {
@@ -291,6 +295,11 @@ void Server::load_char(std::string charname, std::string userid) {
 	rooms.add_player(ch.loc, ch);
 }
 
+void Server::init(std::string r_port, std::string s_port) {
+	r_socket.bind("tcp://*:" + r_port);
+	s_socket.bind("tcp://*:" + s_port);
+}
+
 void Server::dbconnect() {
 	conn = PQconnectdb("host=localhost dbname=sorcery user=sorcery password=ryu5g7cwq89t97z5t4yq");
 
@@ -323,18 +332,18 @@ PGresult* Server::dbselect(std::string query) {
 	return res;
 }
 
-void Server::send_err(zmq::socket_t& socket) {
+void Server::send_err() {
 	Response rep;
 	rep.set("There was a server error in processing the command.");
-	rep.send(socket);
+	rep.send(r_socket);
 }
 
-void Server::handle_req(zmq::socket_t& socket) {
-	handle_req(socket, std::cout);
+void Server::handle_req() {
+	handle_req(std::cout);
 }
 
-void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
-	Request req(socket);
+void Server::handle_req(std::ostream& s) {
+	Request req(r_socket);
 	Response rep;
 
 	std::string userid = req.get_userid();
@@ -396,5 +405,39 @@ void Server::handle_req(zmq::socket_t& socket, std::ostream& s) {
 		}
 	}
 	
-	rep.send(socket);
+	rep.send(r_socket);
+}
+
+void Server::notify_room(int roomid, std::string msg) {
+	int player_amnt = rooms.player_amnt(roomid);
+	std::vector<std::string> users;	
+
+	for (int i = 0; i < player_amnt; i++) {
+		users.push_back(rooms.get_player(roomid, i).owner);
+	}
+
+	notify(users, msg);
+}
+
+void Server::notify(std::vector<std::string>& users, std::string msg) {
+	// The notify function sends a multipart message that signals the client to notify the specified users. The first part contains the message to display, and all subsequent parts contain user IDs of the players who should be notified.
+	// The socket parameter should be the socket that is being used for the pub/sub pattern.
+
+	int users_amnt = users.size();
+	if (users_amnt == 0) {
+		return;
+	}
+
+	Response notif;
+	notif.set(msg);
+	notif.send_multipart(s_socket);
+
+	int i;
+	for (i = 0; i < users_amnt - 1; i++) {
+		notif.set(users[i]);
+		notif.send_multipart(s_socket);
+	}
+
+	notif.set(users[i]);
+	notif.send(s_socket);
 }

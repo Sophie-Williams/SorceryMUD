@@ -20,6 +20,10 @@
 
 class Server {
 	private:
+		std::string server_addr = "127.0.0.1";
+		zmq::socket_t r_socket;
+		zmq::socket_t s_socket;
+
 		PlayerList connected;
 		NewCharacterList newchars;
 		RoomList rooms;
@@ -33,7 +37,7 @@ class Server {
 		std::string CMD_INVALID;
 
 	public:
-		Server();
+		Server(zmq::context_t&);
 
 		std::string look(std::string);
 		std::string look_roomid(std::string, int);
@@ -51,12 +55,14 @@ class Server {
 		void move_char(std::string, int, int);
 		void init_rooms(std::string filepath) { rooms.init(filepath); }
 		void load_char(std::string, std::string);
-		void bind(zmq::socket_t& socket, std::string port) { socket.bind("tcp://*:" + port); }
+		void init(std::string r_port, std::string s_port);
 		void dbconnect();
 
-		void send_err(zmq::socket_t&);
-		void handle_req(zmq::socket_t&);
-		void handle_req(zmq::socket_t&, std::ostream&);
+		void send_err();
+		void handle_req();
+		void handle_req(std::ostream&);
+		void notify(std::vector<std::string>&, std::string);
+		void notify_room(int, std::string);
 };
 
 #endif
