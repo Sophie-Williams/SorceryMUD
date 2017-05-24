@@ -213,7 +213,7 @@ std::string Server::select_race(std::string userid, std::string content) {
 }
 
 std::string Server::select_class(std::string userid, std::string content) {
-	if (content == "dragonslayer" || content == "sorcerer" || content == "healer" || content == "druid") {
+	if (content == "dragonslayer" || content == "sorcerer" || content == "thief" || content == "healer" || content == "druid") {
 		newchars.set_class(userid, content);
 
 		connected.setplayerstate(userid, 24);
@@ -255,11 +255,10 @@ std::string Server::newchar_confirm(std::string userid, std::string content) {
 void Server::move_char(std::string userid, int loc, int dest) {
 	Character ch = chars.get_char(userid);
 	rooms.remove_player(loc, userid);
+	notify_room(loc, ch.name + " has left toward the " + rooms.get_connected_exit(loc, dest).name + ".");
 	chars.set_loc(userid, dest);
+	notify_room(dest, ch.name + " has arrived from the " + rooms.get_connected_exit(dest, loc).name + ".");
 	rooms.add_player(dest, ch);
-
-	notify_room(loc, "[name] has left toward the [exit].");
-	notify_room(dest, "[name] has arrived from the [exit]");
 }
 
 void Server::load_char(std::string charname, std::string userid) {

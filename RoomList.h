@@ -28,7 +28,8 @@ class RoomList {
 		void init(std::string);
 		std::string get_room_desc(int);
 		int exit_amnt(int);
-		struct Exit get_exit(int, int);
+		Exit get_exit(int, int);
+		Exit get_connected_exit(int, int);
 		int player_amnt(int);
 		Character get_player(int, int);
 		void add_player(int, Character);

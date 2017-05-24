@@ -52,6 +52,22 @@ Exit RoomList::get_exit(int roomid, int index) {
 	throw "RoomList::get_exit() called with a roomid that does not exist"; 
 }
 
+Exit RoomList::get_connected_exit(int loc, int dest) {
+	for (unsigned int i = 0; i < rooms.size(); i++) {
+		if (rooms[i].roomid == loc) {
+			for (unsigned int p = 0; p < rooms[i].exits.size(); p++) {
+				if (rooms[i].exits[p].dest == dest) {
+					return rooms[i].exits[p];
+				}
+			}
+
+			throw "RoomList::get_connected_exit() called with unconnected rooms";
+		}
+	}
+
+	throw "RoomList::get_connected_exit() called with a roomid that does not exist";
+}
+
 int RoomList::player_amnt(int roomid) {
 	for (unsigned int i = 0; i < rooms.size(); i++) {
 		if (rooms[i].roomid == roomid) {
@@ -100,4 +116,3 @@ void RoomList::remove_player(int roomid, std::string userid) {
 
 	throw "RoomList::remove_player() called with invalid room or character name";
 }
-
