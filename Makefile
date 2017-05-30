@@ -1,5 +1,5 @@
 CC = g++
-OBJ = sorcery.o Request.o Response.o PlayerList.o NewCharacterList.o CharacterList.o RoomList.o Server.o
+OBJ = sorcery.o Request.o Response.o PlayerList.o NewCharList.o PlayerCharList.o RoomList.o Server.o
 
 #NOTE: move libpq requirement to Server class instead of main once database stuff is implemented
 #$(CC) -std=gnu++11 -o sorcery.o -c main.cpp -I/usr/include/postgresql -L/usr/lib/x86_64-linux-gnu -lpq -lzmq -Wall
@@ -19,11 +19,11 @@ Response.o: Response.cpp
 PlayerList.o: PlayerList.cpp
 	$(CC) -std=gnu++11 -o PlayerList.o -c PlayerList.cpp -Wall
 
-NewCharacterList.o: NewCharacterList.cpp
-	$(CC) -std=gnu++11 -o NewCharacterList.o -c NewCharacterList.cpp -Wall
+NewCharList.o: NewCharList.cpp
+	$(CC) -std=gnu++11 -o NewCharList.o -c NewCharList.cpp -Wall
 
-CharacterList.o: CharacterList.cpp
-	$(CC) -std=gnu++11 -o CharacterList.o -c CharacterList.cpp -Wall
+PlayerCharList.o: PlayerCharList.cpp
+	$(CC) -std=gnu++11 -o PlayerCharList.o -c PlayerCharList.cpp -Wall
 
 RoomList.o: RoomList.cpp
 	$(CC) -std=gnu++11 -o RoomList.o -c RoomList.cpp -Wall

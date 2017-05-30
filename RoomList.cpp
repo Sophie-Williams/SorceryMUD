@@ -78,7 +78,7 @@ int RoomList::player_amnt(int roomid) {
 	return -1; 
 }
 
-Character RoomList::get_player(int roomid, int index) {
+PlayerChar RoomList::get_player(int roomid, int index) {
 	for (unsigned int i = 0; i < rooms.size(); i++) {
 		if (rooms[i].roomid == roomid) {
 			if (index + 1 > int(rooms[i].players.size())) {
@@ -91,7 +91,7 @@ Character RoomList::get_player(int roomid, int index) {
 	throw "RoomList::get_player() called with a roomid that does not exist"; 
 }
 
-void RoomList::add_player(int roomid, Character ch) {
+void RoomList::add_player(int roomid, PlayerChar ch) {
 	for (unsigned int i = 0; i < rooms.size(); i++) {
 		if (rooms[i].roomid == roomid) {
 			rooms[i].players.push_back(ch);

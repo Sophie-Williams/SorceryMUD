@@ -14,7 +14,7 @@ std::string Server::look_roomid(std::string userid, int roomid) {
 	std::string rep_msg = rooms.get_room_desc(roomid);
 	int i, player_amnt = rooms.player_amnt(roomid);
 	for (i = 0; i < player_amnt; i++) {
-		Character character = rooms.get_player(roomid, i);
+		PlayerChar character = rooms.get_player(roomid, i);
 		if (character.owner == userid) {
 			i++;
 			break;
@@ -24,7 +24,7 @@ std::string Server::look_roomid(std::string userid, int roomid) {
 	}
 
 	for (; i < player_amnt; i++) { // Loop twice for a tiny optimization
-		Character character = rooms.get_player(roomid, i);
+		PlayerChar character = rooms.get_player(roomid, i);
 		rep_msg += "\n" + character.name + " is here.";
 	}
 
@@ -253,7 +253,7 @@ std::string Server::newchar_confirm(std::string userid, std::string content) {
 }
 
 void Server::move_char(std::string userid, int loc, int dest) {
-	Character ch = chars.get_char(userid);
+	PlayerChar ch = chars.get_char(userid);
 	rooms.remove_player(loc, userid);
 	notify_room(loc, ch.name + " has left toward the " + rooms.get_connected_exit(loc, dest).name + ".");
 	chars.set_loc(userid, dest);
@@ -277,7 +277,7 @@ void Server::load_char(std::string charname, std::string userid) {
 	//std::string game_class = PQgetvalue(chardata, 0, 2);
 	//int loc = atoi(PQgetvalue(chardata, 0, 5));
 
-	Character ch;
+	PlayerChar ch;
 	ch.name = charname;
 	ch.gender = PQgetvalue(chardata, 0,0)[0];
 	ch.race = PQgetvalue(chardata, 0, 1);

@@ -1,13 +1,13 @@
-// NewCharacter struct and NewCharacterList class for SorceryMUD, assists in keeping track of new character info when they are being created
+// NewChar struct and NewCharList class for SorceryMUD, assists in keeping track of new character info when they are being created
 
-#ifndef NEWCHARACTERLIST_H
-#define NEWCHARACTERLIST_H
+#ifndef NEWCHARLIST_H
+#define NEWCHARLIST_H
 
 #include <string>
 #include <vector>
 #include <locale>
 
-struct NewCharacter {
+struct NewChar {
 	std::string owner;
 	std::string name;
 	std::string gender;
@@ -15,15 +15,15 @@ struct NewCharacter {
 	std::string game_class;
 };
 
-class NewCharacterList {
+class NewCharList {
 	private:
-		std::vector<NewCharacter> new_characters;
+		std::vector<NewChar> new_chars;
 
 		bool new_char_exists_with_owner(std::string);
 
 	public:
-		NewCharacterList() { }
-		//~NewCharacterList();
+		NewCharList() { }
+		//~NewCharList();
 
 		// These methods access items in the new character list. They take a string (representing a user ID) as an identifier, since each player should only have at most one character in creation at any given moment.
 

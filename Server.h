@@ -14,9 +14,9 @@
 #include "Request.h"
 #include "Response.h"
 #include "PlayerList.h"
-#include "NewCharacterList.h"
+#include "NewCharList.h"
 #include "RoomList.h"
-#include "CharacterList.h"
+#include "PlayerCharList.h"
 
 class Server {
 	private:
@@ -25,9 +25,9 @@ class Server {
 		zmq::socket_t s_socket;
 
 		PlayerList connected;
-		NewCharacterList newchars;
+		NewCharList newchars;
 		RoomList rooms;
-		CharacterList chars;
+		PlayerCharList chars;
 
 		PGconn *conn;
 

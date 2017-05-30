@@ -6,7 +6,7 @@
 #include <fstream>
 #include "json.hpp"
 
-#include "CharacterList.h"
+#include "PlayerCharList.h"
 
 struct Exit {
 	std::string name;
@@ -16,7 +16,7 @@ struct Exit {
 struct Room {
 	int roomid;
 	std::string desc;
-	std::vector<Character> players;
+	std::vector<PlayerChar> players;
 	std::vector<Exit> exits;
 };
 
@@ -31,8 +31,8 @@ class RoomList {
 		Exit get_exit(int, int);
 		Exit get_connected_exit(int, int);
 		int player_amnt(int);
-		Character get_player(int, int);
-		void add_player(int, Character);
+		PlayerChar get_player(int, int);
+		void add_player(int, PlayerChar);
 		void remove_player(int, std::string);
 };
 
