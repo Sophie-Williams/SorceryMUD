@@ -11,8 +11,10 @@ int main() {
 
 	zmq::context_t context(1);
 	Server server(context);
-	std::cout << "Loading game data..." << std::endl;
+	std::cout << "Loading room data..." << std::endl;
 	server.init_rooms("rooms.json");
+	std::cout << "Loading NPC data..." << std::endl;
+	server.init_npcs("npcs.json");
 	std::cout << "Connecting to database..." << std::endl;
 	server.dbconnect();
 	std::cout << "Initializing server..." << std::endl;

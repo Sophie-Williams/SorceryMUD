@@ -5,6 +5,7 @@ void RoomList::init(std::string filepath) {
 	nlohmann::json roomdata;
 	file >> roomdata;
 
+	// Change this to use iterators 
 	for (unsigned int i = 0; i < roomdata["rooms"].size(); i++) {
 		Room room;
 		room.roomid = roomdata["rooms"][i]["roomid"];
@@ -55,13 +56,7 @@ Exit RoomList::get_exit(int roomid, int index) {
 Exit RoomList::get_connected_exit(int loc, int dest) {
 	for (unsigned int i = 0; i < rooms.size(); i++) {
 		if (rooms[i].roomid == loc) {
-			for (unsigned int p = 0; p < rooms[i].exits.size(); p++) {
-				if (rooms[i].exits[p].dest == dest) {
-					return rooms[i].exits[p];
-				}
-			}
-
-			throw "RoomList::get_connected_exit() called with unconnected rooms";
+			return rooms[i].get_exit_by_roomid(dest);
 		}
 	}
 
@@ -75,7 +70,7 @@ int RoomList::player_amnt(int roomid) {
 		}
 	}
 
-	return -1; 
+	throw "RoomList::player_amnt() called with a roomid that does not exist";
 }
 
 PlayerChar RoomList::get_player(int roomid, int index) {
@@ -105,14 +100,20 @@ void RoomList::add_player(int roomid, PlayerChar ch) {
 void RoomList::remove_player(int roomid, std::string userid) {
 	for (unsigned int i = 0; i < rooms.size(); i++) {
 		if (rooms[i].roomid == roomid) {
-			for (unsigned int j = 0; j < rooms[i].players.size(); j++) {
-				if (rooms[i].players[j].owner == userid) {
-					rooms[i].players.erase(rooms[i].players.begin() + j);
-					return;
-				}
-			}
+			return rooms[i].remove_player(userid);
 		}
 	}
 
-	throw "RoomList::remove_player() called with invalid room or character name";
+	throw "RoomList::remove_player() called with a roomid that does not exist";
+}
+
+void RoomList::add_npc(int roomid, NonPlayerChar npc) {
+	for (size_t i = 0; i < rooms.size(); i++) {
+		if (rooms[i].roomid == roomid) {
+			rooms[i].npcs.push_back(npc);
+			return;
+		}
+	}
+
+	throw "RoomList::add_npc() called with invalid roomid";
 }

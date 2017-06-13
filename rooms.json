@@ -5,14 +5,16 @@
 			"desc": "You see a lot of things. They look pretty. To the north is another thing.",
 			"exits": [
 				["north", 2]
-			]
+			],
+			"npcs": []
 		},
 		{
 			"roomid": 2,
 			"desc": "Here is a thing. How exciting. To the south is a lot of pretty things.", 
 			"exits": [
 				["south", 1]
-			]
+			],
+			"npcs": ["questgiver"]
 		}
 	]
 }

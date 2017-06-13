@@ -10,8 +10,9 @@ std::string Server::look(std::string userid) {
 }
 
 std::string Server::look_roomid(std::string userid, int roomid) {
-	// In the future when look functionality is expanded, this function header may also be expanded to require the userid
 	std::string rep_msg = rooms.get_room_desc(roomid);
+
+	// Show all players in the room
 	int i, player_amnt = rooms.player_amnt(roomid);
 	for (i = 0; i < player_amnt; i++) {
 		PlayerChar character = rooms.get_player(roomid, i);
@@ -293,6 +294,11 @@ void Server::load_char(std::string charname, std::string userid) {
 
 	rooms.add_player(ch.loc, ch);
 }
+
+void Server::init_npcs(std::string filepath) {
+	npcs.init(filepath); // Load NPC types from JSON file
+	// Add NPCs to rooms
+} 
 
 void Server::init(std::string r_port, std::string s_port) {
 	r_socket.bind("tcp://*:" + r_port);

@@ -17,6 +17,7 @@
 #include "NewCharList.h"
 #include "RoomList.h"
 #include "PlayerCharList.h"
+#include "NonPlayerCharList.h"
 
 class Server {
 	private:
@@ -28,6 +29,7 @@ class Server {
 		NewCharList newchars;
 		RoomList rooms;
 		PlayerCharList chars;
+		NonPlayerCharList npcs;
 
 		PGconn *conn;
 
@@ -54,6 +56,7 @@ class Server {
 
 		void move_char(std::string, int, int);
 		void init_rooms(std::string filepath) { rooms.init(filepath); }
+		void init_npcs(std::string filepath);
 		void load_char(std::string, std::string);
 		void init(std::string r_port, std::string s_port);
 		void dbconnect();

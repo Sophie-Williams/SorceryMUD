@@ -1,24 +1,14 @@
-#ifndef ROOM_H
-#define ROOM_H
+#ifndef ROOMLIST_H
+#define ROOMLIST_H
 
 #include <string>
 #include <vector>
 #include <fstream>
 #include "json.hpp"
 
-#include "PlayerCharList.h"
-
-struct Exit {
-	std::string name;
-	int dest;
-};
-
-struct Room {
-	int roomid;
-	std::string desc;
-	std::vector<PlayerChar> players;
-	std::vector<Exit> exits;
-};
+#include "Room.h"
+#include "PlayerChar.h"
+#include "NonPlayerChar.h"
 
 class RoomList {
 	private:
@@ -30,10 +20,13 @@ class RoomList {
 		int exit_amnt(int);
 		Exit get_exit(int, int);
 		Exit get_connected_exit(int, int);
+
 		int player_amnt(int);
 		PlayerChar get_player(int, int);
 		void add_player(int, PlayerChar);
 		void remove_player(int, std::string);
+
+		void add_npc(int, NonPlayerChar);
 };
 
 #endif
