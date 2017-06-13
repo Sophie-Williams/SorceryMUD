@@ -27,7 +27,7 @@ std::string RoomList::get_room_desc(int roomid) {
 		}
 	}
 
-	return "";
+	throw "RoomList::get_room_desc() called with a roomid that does not exist";
 }
 
 int RoomList::exit_amnt(int roomid) {
@@ -37,7 +37,7 @@ int RoomList::exit_amnt(int roomid) {
 		}
 	}
 
-	return -1; 
+	throw "RoomList::exit_amnt() called with a roomid that does not exist"; 
 }
 
 Exit RoomList::get_exit(int roomid, int index) {
