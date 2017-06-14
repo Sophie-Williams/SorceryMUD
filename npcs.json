@@ -2,7 +2,8 @@
 	"npcs": [
 		{
 			"name": "questgiver",
-			"display": "Mr. Reitmeier"
+			"display": "Mr. Reitmeier",
+			"desc": "A rather short man with brown hair and a mustache stands around looking impatient."
 		}
 	]
 }

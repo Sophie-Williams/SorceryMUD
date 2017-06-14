@@ -1,16 +1,16 @@
 #include "RoomList.h"
 
-void RoomList::init(std::string filepath) {
+/*void RoomList::init(std::string filepath) {
 	std::ifstream file(filepath);
 	nlohmann::json roomdata;
 	file >> roomdata;
 
 	// Change this to use iterators 
-	for (unsigned int i = 0; i < roomdata["rooms"].size(); i++) {
+	for (size_t i = 0; i < roomdata["rooms"].size(); i++) {
 		Room room;
 		room.roomid = roomdata["rooms"][i]["roomid"];
 		room.desc = roomdata["rooms"][i]["desc"];
-		for (unsigned int j = 0; j < roomdata["rooms"][i]["exits"].size(); j++) {
+		for (size_t j = 0; j < roomdata["rooms"][i]["exits"].size(); j++) {
 			Exit exit;
 			exit.name = roomdata["rooms"][i]["exits"][j][0];
 			exit.dest = roomdata["rooms"][i]["exits"][j][1];
@@ -18,7 +18,7 @@ void RoomList::init(std::string filepath) {
 		}
 		rooms.push_back(room);
 	}
-}
+}*/
 
 std::string RoomList::get_room_desc(int roomid) {
 	for (unsigned int i = 0; i < rooms.size(); i++) {
@@ -79,6 +79,7 @@ PlayerChar RoomList::get_player(int roomid, int index) {
 			if (index + 1 > int(rooms[i].players.size())) {
 				throw "RoomList::get_player() called with an index that does not exist in the room's player list";
 			}
+
 			return rooms[i].players[index];
 		}
 	}
@@ -105,6 +106,30 @@ void RoomList::remove_player(int roomid, std::string userid) {
 	}
 
 	throw "RoomList::remove_player() called with a roomid that does not exist";
+}
+
+int RoomList::npc_amnt(int roomid) {
+	for (unsigned int i = 0; i < rooms.size(); i++) {
+		if (rooms[i].roomid == roomid) {
+			return rooms[i].npcs.size();
+		}
+	}
+
+	throw "RoomList::npc_amnt() called with a roomid that does not exist";
+}
+
+NonPlayerChar RoomList::get_npc(int roomid, int index) {
+	for (unsigned int i = 0; i < rooms.size(); i++) {
+		if (rooms[i].roomid == roomid) {
+			if (index + 1 > int(rooms[i].players.size())) {
+				throw "RoomList::get_npc() called with an index that does not exist in the room's NPC list";
+			}
+
+			return rooms[i].npcs[index];
+		}
+	}
+
+	throw "RoomList::get_npcs() called with a roomid that does not exist"; 
 }
 
 void RoomList::add_npc(int roomid, NonPlayerChar npc) {

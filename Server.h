@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <sstream> // Not needed yet
+//#include <sstream> // Not needed yet
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -17,6 +17,7 @@
 #include "NewCharList.h"
 #include "RoomList.h"
 #include "PlayerCharList.h"
+#include "NPCTypes.h"
 #include "NonPlayerCharList.h"
 
 class Server {
@@ -29,6 +30,7 @@ class Server {
 		NewCharList newchars;
 		RoomList rooms;
 		PlayerCharList chars;
+		NPCTypes npctypes;
 		NonPlayerCharList npcs;
 
 		PGconn *conn;
@@ -55,8 +57,8 @@ class Server {
 		std::string newchar_confirm(std::string, std::string);
 
 		void move_char(std::string, int, int);
-		void init_rooms(std::string filepath) { rooms.init(filepath); }
 		void init_npcs(std::string filepath);
+		void init_rooms(std::string filepath);
 		void load_char(std::string, std::string);
 		void init(std::string r_port, std::string s_port);
 		void dbconnect();

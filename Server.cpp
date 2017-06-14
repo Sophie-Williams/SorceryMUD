@@ -12,6 +12,8 @@ std::string Server::look(std::string userid) {
 std::string Server::look_roomid(std::string userid, int roomid) {
 	std::string rep_msg = rooms.get_room_desc(roomid);
 
+	// These loops could probably be done in a different way, but that's not important right nwo
+
 	// Show all players in the room
 	int i, player_amnt = rooms.player_amnt(roomid);
 	for (i = 0; i < player_amnt; i++) {
@@ -27,6 +29,13 @@ std::string Server::look_roomid(std::string userid, int roomid) {
 	for (; i < player_amnt; i++) { // Loop twice for a tiny optimization
 		PlayerChar character = rooms.get_player(roomid, i);
 		rep_msg += "\n" + character.name + " is here.";
+	}
+
+	// Show all NPCs in the rooms
+	int j, npc_amnt = rooms.npc_amnt(roomid);
+	for (j = 0; j < npc_amnt; j++) {
+		NonPlayerChar npc = rooms.get_npc(roomid, j);
+		rep_msg += "\n" + npc.desc;
 	}
 
 	return rep_msg;
@@ -296,8 +305,41 @@ void Server::load_char(std::string charname, std::string userid) {
 }
 
 void Server::init_npcs(std::string filepath) {
-	npcs.init(filepath); // Load NPC types from JSON file
-	// Add NPCs to rooms
+	npctypes.init(filepath); // Load NPC types from JSON file
+}
+
+void Server::init_rooms(std::string filepath) {
+	std::ifstream file(filepath);
+	nlohmann::json roomdata;
+	file >> roomdata;
+
+	// Change this to use iterators 
+	for (size_t i = 0; i < roomdata["rooms"].size(); i++) {
+		Room room;
+		room.roomid = roomdata["rooms"][i]["roomid"];
+		room.desc = roomdata["rooms"][i]["desc"];
+
+		for (size_t j = 0; j < roomdata["rooms"][i]["exits"].size(); j++) {
+			Exit exit;
+			exit.name = roomdata["rooms"][i]["exits"][j][0];
+			exit.dest = roomdata["rooms"][i]["exits"][j][1];
+			room.exits.push_back(exit);
+		}
+
+		for (size_t k = 0; k < roomdata["rooms"][i]["npcs"].size(); k++) {
+			NonPlayerChar npc;
+			std::string internal = roomdata["rooms"][i]["npcs"][k];
+			NonPlayerChar npctype = npctypes.get_npctype(internal);
+			npc.internal = internal;
+			npc.name = npctype.name; // "name" attribute of NonPlayerChar corresponds to "display" field in JSON file
+			npc.desc = npctype.desc;
+			
+			npcs.add_npc(npc);
+			room.add_npc(npc);
+		}
+
+		rooms.add_room(room);
+	}
 } 
 
 void Server::init(std::string r_port, std::string s_port) {

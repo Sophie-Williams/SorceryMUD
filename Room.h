@@ -21,6 +21,8 @@ struct Room {
 
 	Exit get_exit_by_roomid(int);
 	void remove_player(std::string);
+
+	void add_npc(NonPlayerChar npc) { npcs.push_back(npc); }
 	//void remove_npc(std::string);
 };
 
