@@ -66,8 +66,9 @@ class Server {
 		void send_err();
 		void handle_req();
 		void handle_req(std::ostream&);
-		void notify(std::vector<std::string>&, std::string);
-		void notify_room(int, std::string);
+		void notify_room(int roomid, std::string msg);
+		void notify_player(std::string userid, std::string msg);
+		void notify(std::vector<std::string>& users, std::string msg);
 };
 
 #endif

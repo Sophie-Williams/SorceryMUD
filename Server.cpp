@@ -12,9 +12,10 @@ std::string Server::look(std::string userid) {
 std::string Server::look_roomid(std::string userid, int roomid) {
 	std::string rep_msg = rooms.get_room_desc(roomid);
 
-	// These loops could probably be done in a different way, but that's not important right nwo
+	// These loops could probably be done in a different way, but that's not important right now
 
 	// Show all players in the room
+	// This gets a bit unwieldy because I have to make sure the player doesn't see himself/herself
 	int i, player_amnt = rooms.player_amnt(roomid);
 	for (i = 0; i < player_amnt; i++) {
 		PlayerChar character = rooms.get_player(roomid, i);
@@ -269,6 +270,14 @@ void Server::move_char(std::string userid, int loc, int dest) {
 	chars.set_loc(userid, dest);
 	notify_room(dest, ch.name + " has arrived from the " + rooms.get_connected_exit(dest, loc).name + ".");
 	rooms.add_player(dest, ch);
+
+	for (int i = 0; i < rooms.npc_amnt(dest); i++) {
+		std::string greeting = rooms.get_npc(dest, i).greeting;
+		if (greeting != "") {
+			notify_player(userid, greeting); // I'm not sure why this is in the correct order but I'll take it
+		}
+	}
+
 }
 
 void Server::load_char(std::string charname, std::string userid) {
@@ -333,6 +342,7 @@ void Server::init_rooms(std::string filepath) {
 			npc.internal = internal;
 			npc.name = npctype.name; // "name" attribute of NonPlayerChar corresponds to "display" field in JSON file
 			npc.desc = npctype.desc;
+			npc.greeting = npctype.greeting;
 			
 			npcs.add_npc(npc);
 			room.add_npc(npc);
@@ -464,6 +474,14 @@ void Server::notify_room(int roomid, std::string msg) {
 	}
 
 	notify(users, msg);
+}
+
+void Server::notify_player(std::string userid, std::string msg) {
+	Response notif;
+	notif.set(msg);
+	notif.send_multipart(s_socket);
+	notif.set(userid);
+	notif.send(s_socket);
 }
 
 void Server::notify(std::vector<std::string>& users, std::string msg) {

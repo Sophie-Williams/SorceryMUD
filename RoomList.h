@@ -23,7 +23,7 @@ class RoomList {
 		Exit get_connected_exit(int, int);
 
 		int player_amnt(int);
-		PlayerChar get_player(int, int);
+		PlayerChar get_player(int roomid, int index);
 		void add_player(int, PlayerChar);
 		void remove_player(int, std::string);
 

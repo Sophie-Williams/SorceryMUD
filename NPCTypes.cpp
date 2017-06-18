@@ -10,6 +10,7 @@ void NPCTypes::init(std::string filepath) {
 		npc.internal = it.value()["name"];
 		npc.name = it.value()["display"];
 		npc.desc = it.value()["desc"];
+		npc.greeting = it.value()["greeting"];
 		npctypes.push_back(npc);
 	}
 }
@@ -23,4 +24,4 @@ NonPlayerChar NPCTypes::get_npctype(std::string internal) {
 	}
 
 	throw "NPCTypes::get_npctype called with an invalid argument";
-}
+}	

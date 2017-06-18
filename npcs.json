@@ -3,7 +3,8 @@
 		{
 			"name": "questgiver",
 			"display": "Mr. Reitmeier",
-			"desc": "A rather short man with brown hair and a mustache stands around looking impatient."
+			"desc": "A rather short man with brown hair and a mustache stands around looking impatient.",
+			"greeting": "As you approach, the man turns toward you and barks, \"You there, what are you doing here? This area is off-limits!\""
 		}
 	]
 }
