@@ -2,7 +2,7 @@
 	"npcs": [
 		{
 			"name": "questgiver",
-			"display": "mr. reitmeier",
+			"display": "Mr. Reitmeier",
 			"desc": "Mr. Reitmeier stands around, looking impatient.",
 			"look_string": "This is a short man with brown hair and a mustache. He does not seem particularly interesting.",
 			"aliases": [],

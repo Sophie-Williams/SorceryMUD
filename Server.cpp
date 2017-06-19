@@ -351,7 +351,7 @@ void Server::init_rooms(std::string filepath) {
 			npc.greeting = npctype.greeting;
 			npc.init_aliases(); // Do I have a good reason to call init_aliases() for all NPCs, and not just once per NPC type?*/
 
-			NonPlayerChar npc(npctypes.get_npctype(internal));
+			NonPlayerChar npc(npctypes.get_npctype(internal)); // This will just do a shallow copy, which I think is probably fine for now because there are no pointer values that could vary between the individual NPC and its NPC type
 			
 			npcs.add_npc(npc);
 			room.add_npc(npc);
@@ -427,7 +427,7 @@ void Server::handle_req(std::ostream& s) {
 			}
 
 			else {
-				// Save player and character data to the database, set state to 10 (why do I need to do that again? It's just set to 10 upon login anyway ... why did I make a state column?)
+				// Save player and character data to the database, set state to 10 (why do I need to do that again? It's just set to 10 upon login anyway...why did I make a state column?)
 				connected.remove(userid);
 				rep.set(""); // "Dummy" response to preserve req-rep pattern
 			}

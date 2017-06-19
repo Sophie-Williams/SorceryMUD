@@ -5,30 +5,28 @@
 #include <algorithm>
 #include <unordered_set>
 
-struct CaseInsensitiveCompare {
-	static bool case_insensitive_char_cmp(char a, char b) {
-		return tolower(a) == tolower(b);
-	}
-
-	bool operator() (const std::string& left, const std::string& right) const {
-		if (left.size() == right.size()) {
-			return std::equal(left.begin(), left.end(), right.begin(), case_insensitive_char_cmp);
-		}
-
-		return false;
-	}
-};
+#include <iostream>
 
 class Lookable {
 	private:
-		std::unordered_set<std::string, std::hash<std::string>, CaseInsensitiveCompare> aliases;
+		std::unordered_set<std::string> aliases;
 
 	public:
 		std::string name;
 		std::string look_string;
 
-		void init_aliases() { aliases.insert(name); }
-		bool matches_alias(std::string cmp) { return aliases.find(cmp) != aliases.end(); }
+		void init_aliases() {
+			// Temporary fix to remedy the fact that aliases with uppercase letters don't work
+			std::string name_alias = name;
+			std::transform(name_alias.begin(), name_alias.end(), name_alias.begin(), ::tolower);
+
+			aliases.insert(name_alias);
+		}
+		bool matches_alias(std::string cmp) {
+			// It is not currently necessary to convert the string to lowercase, because that's already done in Server::handle_req
+			//std::transform(cmp.begin(), cmp.end(), cmp.begin(), ::tolower);
+			return aliases.find(cmp) != aliases.end();
+		}
 };
 
 #endif
