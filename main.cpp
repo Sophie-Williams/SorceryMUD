@@ -23,7 +23,7 @@ int main() {
 
 	while (true) {
 		try {
-			server.handle_req();
+			server.handle_req(std::cout);
 			sleep(1); // Change this later
 		}
 

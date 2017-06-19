@@ -17,6 +17,7 @@ class RoomList {
 	public:
 		//void init(std::string);
 		void add_room(Room room) { rooms.push_back(room); }
+		Room* get_room(int roomid);
 		std::string get_room_desc(int);
 		int exit_amnt(int);
 		Exit get_exit(int, int);

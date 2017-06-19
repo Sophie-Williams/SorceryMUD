@@ -64,7 +64,7 @@ class Server {
 		void dbconnect();
 
 		void send_err();
-		void handle_req();
+		void handle_req() { handle_req(std::cout); } // Direct output to stdout by default
 		void handle_req(std::ostream&);
 		void notify_room(int roomid, std::string msg);
 		void notify_player(std::string userid, std::string msg);

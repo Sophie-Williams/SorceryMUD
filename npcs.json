@@ -2,9 +2,11 @@
 	"npcs": [
 		{
 			"name": "questgiver",
-			"display": "Mr. Reitmeier",
-			"desc": "A rather short man with brown hair and a mustache stands around looking impatient.",
-			"greeting": "As you approach, the man turns toward you and barks, \"You there, what are you doing here? This area is off-limits!\""
+			"display": "mr. reitmeier",
+			"desc": "Mr. Reitmeier stands around, looking impatient.",
+			"look_string": "This is a short man with brown hair and a mustache. He does not seem particularly interesting.",
+			"aliases": [],
+			"greeting": "As you approach, Mr. Reitmeier turns toward you and barks, \"You there, what are you doing here? This area is off-limits!\""
 		}
 	]
 }

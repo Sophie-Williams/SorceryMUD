@@ -57,11 +57,12 @@ std::string Server::in_game(std::string userid, std::string content) {
 
 	if (cmd == "look") {
 		if (args == "") {
+			// Show the room
 			return look(userid);
 		}
 
-		// There will be other stuff here later, in the case that there are extra args
-		return look(userid);
+		// Show a specific thing
+		return rooms.get_room(chars.get_loc(userid))->get_lookable(args).look_string;
 	}
 
 	if (cmd == "go") {
@@ -308,6 +309,8 @@ void Server::load_char(std::string charname, std::string userid) {
 	ch.hp_max = atoi(PQgetvalue(chardata, 0, 7));
 	ch.money = atoi(PQgetvalue(chardata, 0, 8));
 	ch.owner = userid;
+	ch.init_aliases();
+	ch.look_string = "Yup, that sure is a player.";
 	chars.add(ch);
 
 	rooms.add_player(ch.loc, ch);
@@ -332,17 +335,23 @@ void Server::init_rooms(std::string filepath) {
 			Exit exit;
 			exit.name = roomdata["rooms"][i]["exits"][j][0];
 			exit.dest = roomdata["rooms"][i]["exits"][j][1];
+			exit.init_aliases();
+			exit.look_string = "Yup, this is an exit.";
 			room.exits.push_back(exit);
 		}
 
 		for (size_t k = 0; k < roomdata["rooms"][i]["npcs"].size(); k++) {
-			NonPlayerChar npc;
 			std::string internal = roomdata["rooms"][i]["npcs"][k];
-			NonPlayerChar npctype = npctypes.get_npctype(internal);
+			
+			/*NonPlayerChar npctype = npctypes.get_npctype(internal);
+			NonPlayerChar npc;
 			npc.internal = internal;
 			npc.name = npctype.name; // "name" attribute of NonPlayerChar corresponds to "display" field in JSON file
 			npc.desc = npctype.desc;
 			npc.greeting = npctype.greeting;
+			npc.init_aliases(); // Do I have a good reason to call init_aliases() for all NPCs, and not just once per NPC type?*/
+
+			NonPlayerChar npc(npctypes.get_npctype(internal));
 			
 			npcs.add_npc(npc);
 			room.add_npc(npc);
@@ -393,10 +402,6 @@ void Server::send_err() {
 	Response rep;
 	rep.set("There was a server error in processing the command.");
 	rep.send(r_socket);
-}
-
-void Server::handle_req() {
-	handle_req(std::cout);
 }
 
 void Server::handle_req(std::ostream& s) {

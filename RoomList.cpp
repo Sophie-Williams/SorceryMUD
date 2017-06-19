@@ -20,6 +20,16 @@
 	}
 }*/
 
+Room* RoomList::get_room(int roomid) {
+	for (unsigned int i = 0; i < rooms.size(); i++) {
+		if (rooms[i].roomid == roomid) {
+			return &rooms[i];
+		}
+	}
+
+	throw "RoomList::get_room() called with a roomid that does not exist";
+}
+
 std::string RoomList::get_room_desc(int roomid) {
 	for (unsigned int i = 0; i < rooms.size(); i++) {
 		if (rooms[i].roomid == roomid) {

@@ -10,7 +10,9 @@ void NPCTypes::init(std::string filepath) {
 		npc.internal = it.value()["name"];
 		npc.name = it.value()["display"];
 		npc.desc = it.value()["desc"];
+		npc.look_string = it.value()["look_string"];
 		npc.greeting = it.value()["greeting"];
+		npc.init_aliases();
 		npctypes.push_back(npc);
 	}
 }

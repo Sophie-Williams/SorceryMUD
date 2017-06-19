@@ -4,7 +4,7 @@ FLAGS = -std=gnu++11 -Wall
 #NOTE: move libpq requirement to Server class instead of main once database stuff is implemented
 #$(CC) $(FLAGS) -o sorcery.o -c main.cpp -I/usr/include/postgresql -L/usr/lib/x86_64-linux-gnu -lpq -lzmq 
 
-game_server: $(OBJ)
+sorcery: $(OBJ)
 	$(CC) $(FLAGS) -o sorcery $(OBJ) -lpq -lzmq
 
 sorcery.o: main.cpp

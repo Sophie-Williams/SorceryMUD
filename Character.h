@@ -5,9 +5,10 @@
 
 #include <string>
 
-class Character {
+#include "Lookable.h"
+
+class Character: public Lookable {
 	public:
-		std::string name;
 		char gender;
 		std::string race;
 		int hp_cur;
