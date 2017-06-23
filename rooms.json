@@ -2,6 +2,7 @@
 	"rooms": [
 		{
 			"roomid": 1,
+			"title": "A Place",
 			"desc": "You see a lot of things. They look pretty. To the north is another thing.",
 			"exits": [
 				["north", 2]
@@ -10,6 +11,7 @@
 		},
 		{
 			"roomid": 2,
+			"title": "Another Place",
 			"desc": "Here is a thing. How exciting. To the south is a lot of pretty things.", 
 			"exits": [
 				["south", 1]

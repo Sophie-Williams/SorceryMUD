@@ -20,6 +20,7 @@ class lookable_not_found: public std::exception {
 class Room {
 	public:
 		int roomid;
+		std::string title;
 		std::string desc;
 		std::vector<PlayerChar> players;
 		std::vector<NonPlayerChar> npcs; // Given that this list should not be used for any real processing and only really exists here as an optimization measure, I'm not really sure that it's necessary to store entire NonPlayerChar objects

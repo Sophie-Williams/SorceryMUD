@@ -11,7 +11,7 @@ std::string Server::look(std::string userid) {
 
 std::string Server::look_roomid(std::string userid, int roomid) {
 	Room* r = rooms.get_room(roomid); 
-	std::string rep_msg = r->desc + "\n\n[ Exits: ";
+	std::string rep_msg = r->title + "\n\t" + r->desc + "\n\n[ Exits: ";
 
 	for (auto it = r->exits.begin(); it != r->exits.end(); ++it) {
 		rep_msg += it->name + " ";
@@ -345,6 +345,7 @@ void Server::init_rooms(std::string filepath) {
 	for (size_t i = 0; i < roomdata["rooms"].size(); i++) {
 		Room room;
 		room.roomid = roomdata["rooms"][i]["roomid"];
+		room.title = roomdata["rooms"][i]["title"];
 		room.desc = roomdata["rooms"][i]["desc"];
 
 		for (size_t j = 0; j < roomdata["rooms"][i]["exits"].size(); j++) {
