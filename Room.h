@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <exception>
 
 #include "PlayerChar.h"
 #include "NonPlayerChar.h"
@@ -10,6 +11,10 @@
 class Exit: public Lookable {
 	public:
 		int dest;
+};
+
+class lookable_not_found: public std::exception {
+	// This exception is thrown when the get_lookable function fails to find a matching Lookable object
 };
 
 class Room {

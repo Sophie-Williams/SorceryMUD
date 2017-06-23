@@ -40,5 +40,5 @@ Lookable Room::get_lookable(std::string alias) {
 		}
 	}
 
-	throw "Couldn't find that thing.";
+	throw lookable_not_found();
 }

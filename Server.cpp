@@ -69,7 +69,13 @@ std::string Server::in_game(std::string userid, std::string content) {
 		}
 
 		// Show a specific thing
-		return rooms.get_room(chars.get_loc(userid))->get_lookable(args).look_string;
+		try {
+			return rooms.get_room(chars.get_loc(userid))->get_lookable(args).look_string;
+		}
+
+		catch (lookable_not_found) {
+			return "I don't see '" + args + "' here.";
+		}
 	}
 
 	if (cmd == "go") {
