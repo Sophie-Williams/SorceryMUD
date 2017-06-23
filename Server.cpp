@@ -10,22 +10,22 @@ std::string Server::look(std::string userid) {
 }
 
 std::string Server::look_roomid(std::string userid, int roomid) {
-	std::string rep_msg = rooms.get_room_desc(roomid);
+	Room* r = rooms.get_room(roomid); 
+	std::string rep_msg = r->desc + "\n\n[ Exits: ";
+
+	for (auto it = r->exits.begin(); it != r->exits.end(); ++it) {
+		rep_msg += it->name + " ";
+	}
+
+	rep_msg += "]";
 
 	// These loops could probably be done in a different way, but that's not important right now
 
-	// Show all NPCs in the rooms
-	int j, npc_amnt = rooms.npc_amnt(roomid);
-	for (j = 0; j < npc_amnt; j++) {
-		NonPlayerChar npc = rooms.get_npc(roomid, j);
-		rep_msg += "\n" + npc.desc;
-	}
-
 	// Show all players in the room
 	// This gets a bit unwieldy because I have to make sure the player doesn't see himself/herself
-	int i, player_amnt = rooms.player_amnt(roomid);
+	int i, player_amnt = r->players.size();
 	for (i = 0; i < player_amnt; i++) {
-		PlayerChar character = rooms.get_player(roomid, i);
+		PlayerChar character = r->players[i];
 		if (character.owner == userid) {
 			i++;
 			break;
@@ -35,8 +35,15 @@ std::string Server::look_roomid(std::string userid, int roomid) {
 	}
 
 	for (; i < player_amnt; i++) { // Loop twice for a tiny optimization
-		PlayerChar character = rooms.get_player(roomid, i);
+		PlayerChar character = r->players[i];
 		rep_msg += "\n" + character.name + " is here.";
+	}
+
+	// Show all NPCs in the rooms
+	int j, npc_amnt = r->npcs.size();
+	for (j = 0; j < npc_amnt; j++) {
+		NonPlayerChar npc = r->npcs[j];
+		rep_msg += "\n" + npc.desc;
 	}
 
 	return rep_msg;
