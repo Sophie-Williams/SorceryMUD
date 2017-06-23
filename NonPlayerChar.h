@@ -3,6 +3,8 @@
 #ifndef NONPLAYERCHAR_H
 #define NONPLAYERCHAR_H
 
+#include <vector>
+
 #include "Character.h"
 
 class NonPlayerChar: public Character {
@@ -10,7 +12,7 @@ class NonPlayerChar: public Character {
 		std::string internal; // The internal name in the JSON file
 		// The "name" attribute corresponds to the "display" field in the JSON file
 		std::string desc; // The text that represents the NPC when you type "look"
-		std::string greeting;
+		std::vector<std::string> dialogue;
 };
 
 #endif

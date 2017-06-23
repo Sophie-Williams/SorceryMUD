@@ -6,7 +6,10 @@
 			"desc": "Mr. Reitmeier stands around, looking impatient.",
 			"look_string": "This is a short man with brown hair and a mustache. He does not seem particularly interesting.",
 			"aliases": [],
-			"greeting": "As you approach, Mr. Reitmeier turns toward you and barks, \"You there, what are you doing here? This area is off-limits!\""
+			"dialogue": [
+				"As you approach, Mr. Reitmeier turns toward you and barks, \"Hey, what are you doing here? This area is off-limits!\"",
+				"\"If you want to pass through, you'll have to bribe me with at least six **shillings**\", he says."
+			]
 		}
 	]
 }

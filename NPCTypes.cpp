@@ -11,7 +11,10 @@ void NPCTypes::init(std::string filepath) {
 		npc.name = it.value()["display"];
 		npc.desc = it.value()["desc"];
 		npc.look_string = it.value()["look_string"];
-		npc.greeting = it.value()["greeting"];
+		for (auto dialogue_it = it.value()["dialogue"].begin(); dialogue_it != it.value()["dialogue"].end(); ++dialogue_it) {
+			npc.dialogue.push_back(dialogue_it.value());
+		}
+		
 		npc.init_aliases();
 		npctypes.push_back(npc);
 	}

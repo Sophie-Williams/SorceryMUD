@@ -10,6 +10,17 @@ bool PlayerCharList::char_exists_with_user(std::string userid) {
 	return false;
 }
 
+void PlayerCharList::remove(std::string userid) {
+	for (unsigned int i = 0; i < chars.size(); i++) {
+		if (chars[i].owner == userid) {
+			chars.erase(chars.begin() + i);
+			return;
+		}
+	}
+
+	throw "PlayerCharList::remove called with a userid that was not found";
+}
+
 PlayerChar PlayerCharList::get_char(std::string userid) {
 	for (unsigned int i = 0; i < chars.size(); i++) {
 		if (chars[i].owner == userid) {

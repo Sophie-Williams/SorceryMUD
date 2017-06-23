@@ -16,6 +16,7 @@ class PlayerCharList {
 
 		bool char_exists_with_user(std::string); 
 		void add(PlayerChar ch) { chars.push_back(ch); }
+		void remove(std::string userid);
 		PlayerChar get_char(std::string);
 		
 		int get_loc(std::string);

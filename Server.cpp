@@ -14,6 +14,13 @@ std::string Server::look_roomid(std::string userid, int roomid) {
 
 	// These loops could probably be done in a different way, but that's not important right now
 
+	// Show all NPCs in the rooms
+	int j, npc_amnt = rooms.npc_amnt(roomid);
+	for (j = 0; j < npc_amnt; j++) {
+		NonPlayerChar npc = rooms.get_npc(roomid, j);
+		rep_msg += "\n" + npc.desc;
+	}
+
 	// Show all players in the room
 	// This gets a bit unwieldy because I have to make sure the player doesn't see himself/herself
 	int i, player_amnt = rooms.player_amnt(roomid);
@@ -30,13 +37,6 @@ std::string Server::look_roomid(std::string userid, int roomid) {
 	for (; i < player_amnt; i++) { // Loop twice for a tiny optimization
 		PlayerChar character = rooms.get_player(roomid, i);
 		rep_msg += "\n" + character.name + " is here.";
-	}
-
-	// Show all NPCs in the rooms
-	int j, npc_amnt = rooms.npc_amnt(roomid);
-	for (j = 0; j < npc_amnt; j++) {
-		NonPlayerChar npc = rooms.get_npc(roomid, j);
-		rep_msg += "\n" + npc.desc;
 	}
 
 	return rep_msg;
@@ -273,9 +273,12 @@ void Server::move_char(std::string userid, int loc, int dest) {
 	rooms.add_player(dest, ch);
 
 	for (int i = 0; i < rooms.npc_amnt(dest); i++) {
-		std::string greeting = rooms.get_npc(dest, i).greeting;
-		if (greeting != "") {
-			notify_player(userid, greeting); // I'm not sure why this is in the correct order but I'll take it
+		std::vector<std::string> dialogue = rooms.get_npc(dest, i).dialogue;
+		if (dialogue.size() > 0) {
+			// I'm not sure why this is in the correct order but I'll take it
+			for (auto it = dialogue.begin(); it != dialogue.end(); ++it) {
+				notify_player(userid, *it);
+			}
 		}
 	}
 
@@ -429,6 +432,7 @@ void Server::handle_req(std::ostream& s) {
 			else {
 				// Save player and character data to the database, set state to 10 (why do I need to do that again? It's just set to 10 upon login anyway...why did I make a state column?)
 				connected.remove(userid);
+				chars.remove(userid);
 				rep.set(""); // "Dummy" response to preserve req-rep pattern
 			}
 		}
@@ -482,6 +486,8 @@ void Server::notify_room(int roomid, std::string msg) {
 }
 
 void Server::notify_player(std::string userid, std::string msg) {
+	std::cout << "Notifying user " << userid << ": " << msg << std::endl;
+
 	Response notif;
 	notif.set(msg);
 	notif.send_multipart(s_socket);
